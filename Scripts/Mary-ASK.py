@@ -1,18 +1,16 @@
 import matplotlib.pyplot as plt
 import random 
 import numpy as np
-N = 60
+N = 50
 
-f = float(1)
+f = 100
+Levels = 4
 
-levels = 2
+step = 1/(3*(f*2*3.14*(2**Levels)))
 
-step = 1/(4*(f*2*3.14*(2**levels)))
+t = np.arange(0,1000,step)
 
-graph_scaling_factor = 250
-
-t = np.arange(0,100,step)
-
+graph_scaling_factor = len(t)
 
 def Bit_generator(L):
     bits = random.choices([0, 1], weights = [50,50], k = N)
@@ -34,13 +32,12 @@ def Int_generator(bits,Levels):
         int_list.append(int_value)
         int_value = 0 
     return int_list
-    
-            
-def Generate_MFSK(L,f,int_list,t,levels):
-    w = [f*2*3.1425*i for i in range(1,(2**levels)+1)]
-    print(w)
-    t_per_bit = int(len(t)/len(int_list))
 
+
+
+            
+def Generate_MASK(L,f,int_list,t,levels):
+    t_per_bit = int(len(t)/len(int_list))
     i1_mapped = []
 
     
@@ -54,21 +51,32 @@ def Generate_MFSK(L,f,int_list,t,levels):
         remaining_t = len(t)-len(i1_mapped)
         for i in range(0,remaining_t):
             i1_mapped.append(i1_mapped[len(i1_mapped)-1])
-    s = []        
-    for i in range(0,len(t)):
-        w_relative = w[i1_mapped[i]]
-        s.append(np.cos(t[i]*w_relative))
-    return [i1_mapped,s]
+    s = []
+    for q in range(0,len(t)):
+        s.append((i1_mapped[q]+1)*np.cos(f*3.14*t[q]))
     
+    
+    return [i1_mapped, s]
+
+
+def AWGN_Noise(s,ratio):
+    for q in range(0,len(s)):
+        s[q] = s[q] + ratio*(random.gauss(mu=0.0, sigma=1.0))
+    return s
 
 bits = Bit_generator(N)
 
-ints = Int_generator(bits, levels)
+ints = Int_generator(bits, Levels)
 
-MPSK = Generate_MFSK(N, f, ints, t, levels)
+MASK = Generate_MASK(N, f, ints, t, Levels)
+
+MASK[1] = AWGN_Noise(MASK[1], 1)
+
 
 
 fig1, (sub1, sub2) = plt.subplots(1, 2, figsize=(10, 10))
-sub1.plot([t[i] for i in range(0,graph_scaling_factor)], [MPSK[1][i] for i in range(0,graph_scaling_factor)])
-sub2.plot(abs(np.fft.fft(MPSK[1])))
+sub1.plot([t[i] for i in range(0,graph_scaling_factor)], [MASK[1][i] for i in range(0,graph_scaling_factor)])
+sub2.plot(abs(np.fft.fft(MASK[1])))
 plt.show()
+
+        

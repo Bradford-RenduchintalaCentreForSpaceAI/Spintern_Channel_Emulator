@@ -6,12 +6,12 @@ L = N/8
 step = 0.01
 wt1 = (1*10^9)*np.pi
 wt2 = (2*10^9)*np.pi
-graph_scaling_factor = 2.5
+graph_scaling_factor = 5
 #Create time and but sequance 
 t = np.arange(0, N, step)
 b1 = random.choices([0,1], weights = (50,50), k = round(L)) 
 
-
+ratio = 0
 # Map the bit values to the time sequance
 c1 = 10*np.sin(t*wt1)
 c2 = 10*np.sin(t*wt2)
@@ -21,7 +21,7 @@ for q in range(0,round(L)):
         b1_mapped.append(b1[q])
 # Generate Noise 
 
-n = [random.gauss(mu=0.0, sigma=1.0) for i in t]
+n = [ratio*random.gauss(mu=0.0, sigma=1.0) for i in t]
 
 
 # Define the two signals

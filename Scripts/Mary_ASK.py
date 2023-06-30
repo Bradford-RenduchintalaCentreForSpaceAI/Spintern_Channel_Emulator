@@ -53,30 +53,13 @@ def Generate_MASK(L,f,int_list,t,levels):
             i1_mapped.append(i1_mapped[len(i1_mapped)-1])
     s = []
     for q in range(0,len(t)):
-        s.append((i1_mapped[q]+1)*np.cos(f*3.14*t[q]))
+        s.append((i1_mapped[q])*np.cos(f*3.14*t[q]))
     
     
     return [i1_mapped, s]
 
 
-def AWGN_Noise(s,ratio):
-    for q in range(0,len(s)):
-        s[q] = s[q] + ratio*(random.gauss(mu=0.0, sigma=1.0))
-    return s
-
-bits = Bit_generator(N)
-
-ints = Int_generator(bits, Levels)
-
-MASK = Generate_MASK(N, f, ints, t, Levels)
-
-MASK[1] = AWGN_Noise(MASK[1], 1)
 
 
-
-fig1, (sub1, sub2) = plt.subplots(1, 2, figsize=(10, 10))
-sub1.plot([t[i] for i in range(0,graph_scaling_factor)], [MASK[1][i] for i in range(0,graph_scaling_factor)])
-sub2.plot(abs(np.fft.fft(MASK[1])))
-plt.show()
 
         

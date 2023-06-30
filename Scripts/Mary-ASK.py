@@ -6,9 +6,9 @@ N = 50
 f = 100
 Levels = 4
 
-step = 1/(3*(f*2*3.14*(2**Levels)))
+step = 1/(3*(f*2*3.14))
 
-t = np.arange(0,1000,step)
+t = np.arange(0,100,step)
 
 graph_scaling_factor = len(t)
 

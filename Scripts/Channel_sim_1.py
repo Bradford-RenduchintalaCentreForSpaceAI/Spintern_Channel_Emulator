@@ -1,5 +1,5 @@
 ## Imports
-from Mary_ASK import Int_generator, Bit_generator, Generate_MASK
+from Mary_ASK import Int_generator, Bit_generator, Generate_MASK, De_mod_MASK
 import numpy as np
 import matplotlib.pyplot as plt
 import random
@@ -8,17 +8,17 @@ from Filters import Filters
 
 # Basics Var declaration 
 
-N = 100
+N = 10
 
-f = 10
+f = 100
 
 Levels = 3
 
 step = 1/(3*(f*2*3.14))
 
-t = np.arange(0,10,step)
+t = np.arange(0,100,step)
 
-graph_scaling_factor = 10
+graph_scaling_factor = 1
 
 
 #AWGN Noise 
@@ -39,37 +39,28 @@ bits = Bit_generator(N)
 
 ints = Int_generator(bits, Levels)
 
-[bits, TxSignal] = Generate_MASK(N, f, ints, t, Levels)
+[ints_mapped, TxSignal] = Generate_MASK(N, f, ints, t, Levels)
 
 
 # Channel 
 
-RxSignal = AWGN_Noise(TxSignal, 0)
+RxSignal = AWGN_Noise(TxSignal, 0.5)
 
-
+# More to add here 
 
 # Reciever 
 
-for i in range(len(RxSignal)):
-    RxSignal[i] = RxSignal[i]-np.cos(f*3.14*t[i])
-
-#RxSignal = Filters().Low_pass(s = RxSignal, cutoff=10, N = 10, fs = 1/step)
-
-
-
-
-
-
+RxInt = De_mod_MASK(RxSignal, 1/step, f, t)
 
 
 #Plots 
 fig1, (sub1, sub2,sub3) = plt.subplots(3,1, figsize=(10, 10))
-sub1.plot(t[:int(len(t)/graph_scaling_factor)], TxSignal[:int(len(t)/graph_scaling_factor)])
-sub1.plot(t[:int(len(t)/graph_scaling_factor)], RxSignal[:int(len(t)/graph_scaling_factor)], linestyle='--')
-sub1.set_ylim(-20, 20)
+sub1.plot(t[:int(len(t)/graph_scaling_factor)], ints_mapped[:int(len(t)/graph_scaling_factor)])
+sub1.plot(t[:int(len(t)/graph_scaling_factor)], RxInt[:int(len(t)/graph_scaling_factor)], linestyle='--')
 sub2.plot(abs(sci.fft.fft(TxSignal)))
 sub2.plot(abs(sci.fft.fft(RxSignal)))
-sub3.scatter(np.real(bits),np.imag(bits))
+sub3.scatter(np.real(ints_mapped),np.imag(ints_mapped))
+sub3.scatter(np.real(RxInt),np.imag(RxInt))
 sub3.grid(True)
 fig1.subplots_adjust(hspace=0.2)
 plt.show()

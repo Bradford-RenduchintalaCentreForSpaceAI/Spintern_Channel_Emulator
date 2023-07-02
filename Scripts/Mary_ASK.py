@@ -1,19 +1,10 @@
 import matplotlib.pyplot as plt
 import random 
 import numpy as np
-N = 50
 
-f = 100
-Levels = 4
-
-step = 1/(3*(f*2*3.14))
-
-t = np.arange(0,100,step)
-
-graph_scaling_factor = len(t)
 
 def Bit_generator(L):
-    bits = random.choices([0, 1], weights = [50,50], k = N)
+    bits = random.choices([0, 1], weights = [50,50], k = L)
     return bits
     
 
@@ -37,6 +28,7 @@ def Int_generator(bits,Levels):
 
             
 def Generate_MASK(L,f,int_list,t,levels):
+    from Filters import Filters
     t_per_bit = int(len(t)/len(int_list))
     i1_mapped = []
 
@@ -60,6 +52,12 @@ def Generate_MASK(L,f,int_list,t,levels):
 
 
 
+def De_mod_MASK(s,ft,f,t):
+    from Filters import Filters
+    s1 = s*np.cos((f*3.14*t)+3.14/4)
+    
+    s2 = Filters().Low_pass(s1, f/2, 15, ft)
+    return s2
 
-
+    
         

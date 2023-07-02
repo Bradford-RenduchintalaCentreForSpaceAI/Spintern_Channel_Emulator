@@ -5,20 +5,21 @@ import matplotlib.pyplot as plt
 import random
 import scipy as sci
 from Filters import Filters
+import time
 
 # Basics Var declaration 
 
-N = 10
+N = 50
 
-f = 100
+f = 200
 
 Levels = 3
 
 step = 1/(3*(f*2*3.14))
 
-t = np.arange(0,100,step)
+t = np.arange(0,1000,step)
 
-graph_scaling_factor = 1
+graph_scaling_factor = 10
 
 
 #AWGN Noise 
@@ -39,29 +40,56 @@ bits = Bit_generator(N)
 
 ints = Int_generator(bits, Levels)
 
-[ints_mapped, TxSignal] = Generate_MASK(N, f, ints, t, Levels)
+[ints_mapped, TxSignal] = Generate_MASK(N, f, ints, t, Levels,1/step)
 
 
 # Channel 
 
-RxSignal = AWGN_Noise(TxSignal, 0.5)
+RxSignal = AWGN_Noise(TxSignal, 0.25)
 
-# More to add here 
+
 
 # Reciever 
 
 RxInt = De_mod_MASK(RxSignal, 1/step, f, t)
 
 
+RxIntSampled = []
+cnt = 0
+for i in range(len(t)):
+    if cnt == len(t)/100:
+        RxIntSampled.append(RxInt[i])
+        cnt = 0
+    cnt += 1
+        
+
+
+
 #Plots 
-fig1, (sub1, sub2,sub3) = plt.subplots(3,1, figsize=(10, 10))
+fig1, (sub1, sub2,sub3,sub4) = plt.subplots(4,1, figsize=(10, 10))
 sub1.plot(t[:int(len(t)/graph_scaling_factor)], ints_mapped[:int(len(t)/graph_scaling_factor)])
 sub1.plot(t[:int(len(t)/graph_scaling_factor)], RxInt[:int(len(t)/graph_scaling_factor)], linestyle='--')
-sub2.plot(abs(sci.fft.fft(TxSignal)))
-sub2.plot(abs(sci.fft.fft(RxSignal)))
+fft1 = np.abs(sci.fft.fft(TxSignal))
+fft1 = fft1[:len(fft1)//2]
+fft2 = np.abs(sci.fft.fft(ints_mapped))
+fft2 = fft2[:len(fft2)//2]
+fft_freq = sci.fft.fftfreq(len(t),step)
+fft_freq = fft_freq[:len(fft_freq)//2]
+sub2.plot(fft_freq,fft2, linestyle = 'dotted')
+sub2.plot(fft_freq,fft1)
+sub2.set_xlim(0,f*4)
+sub2.set_ylim(0,10000)
 sub3.scatter(np.real(ints_mapped),np.imag(ints_mapped))
-sub3.scatter(np.real(RxInt),np.imag(RxInt))
+sub4.scatter(np.real(RxIntSampled),np.imag(RxIntSampled))
 sub3.grid(True)
+sub4.grid(True)
 fig1.subplots_adjust(hspace=0.2)
 plt.show()
+
+
+
+
+# for i in range(len(t)):
+#     print(f"t:{t[i]} Ints:{ints_mapped[i]} RxInts:{RxInt[i]}")
+#     time.sleep(0.001)
 

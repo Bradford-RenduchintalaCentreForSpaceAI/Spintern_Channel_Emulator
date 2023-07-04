@@ -45,7 +45,7 @@ ints = Int_generator(bits, Levels)
 
 # Channel 
 
-RxSignal = AWGN_Noise(TxSignal, 0.25)
+RxSignal = AWGN_Noise(TxSignal, 0.5)
 
 
 

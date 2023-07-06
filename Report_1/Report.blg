@@ -1,0 +1,74 @@
+This is BibTeX, Version 0.99d
+Capacity: max_strings=200000, hash_size=200000, hash_prime=170003
+The top-level auxiliary file: Report.aux
+Reallocating 'name_of_file' (item size: 1) to 9 items.
+The style file: IEEEtran.bst
+Reallocating 'name_of_file' (item size: 1) to 11 items.
+Reallocating 'singl_function' (item size: 4) to 100 items.
+Reallocating 'singl_function' (item size: 4) to 100 items.
+Reallocating 'singl_function' (item size: 4) to 100 items.
+Reallocating 'wiz_functions' (item size: 4) to 6000 items.
+Reallocating 'singl_function' (item size: 4) to 100 items.
+Database file #1: My_Library.bib
+-- IEEEtran.bst version 1.14 (2015/08/26) by Michael Shell.
+-- http://www.michaelshell.org/tex/ieeetran/bibtex/
+-- See the "IEEEtran_bst_HOWTO.pdf" manual for usage information.
+Warning--empty author in ITU-R_P.676-5
+Warning--empty journal in ITU-R_P.676-5
+Warning--empty year in ITU-R_P.676-5
+Warning--empty author in ITU-R_P.618-7
+Warning--empty journal in ITU-R_P.618-7
+Warning--empty year in ITU-R_P.618-7
+Warning--empty author in ITU-R_P.837-1
+Warning--empty journal in ITU-R_P.837-1
+Warning--empty year in ITU-R_P.837-1
+Warning--empty author in ITU-R_P.531-14
+Warning--empty journal in ITU-R_P.531-14
+Warning--empty year in ITU-R_P.531-14
+Warning--empty author in ITU-R_P.372-16
+Warning--empty journal in ITU-R_P.372-16
+Warning--empty year in ITU-R_P.372-16
+
+Done.
+You've used 10 entries,
+            4087 wiz_defined-function locations,
+            870 strings with 9176 characters,
+and the built_in function-call counts, 4472 in all, are:
+= -- 273
+> -- 86
+< -- 19
++ -- 45
+- -- 15
+* -- 264
+:= -- 664
+add.period$ -- 21
+call.type$ -- 10
+change.case$ -- 8
+chr.to.int$ -- 51
+cite$ -- 25
+duplicate$ -- 371
+empty$ -- 462
+format.name$ -- 19
+if$ -- 1004
+int.to.chr$ -- 0
+int.to.str$ -- 10
+missing$ -- 64
+newline$ -- 57
+num.names$ -- 5
+pop$ -- 215
+preamble$ -- 1
+purify$ -- 0
+quote$ -- 2
+skip$ -- 307
+stack$ -- 0
+substring$ -- 112
+swap$ -- 212
+text.length$ -- 2
+text.prefix$ -- 0
+top$ -- 5
+type$ -- 10
+warning$ -- 15
+while$ -- 14
+width$ -- 12
+write$ -- 92
+(There were 15 warnings)

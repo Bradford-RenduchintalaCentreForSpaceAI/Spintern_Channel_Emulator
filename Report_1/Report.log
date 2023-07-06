@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.25 (MiKTeX 23.4) (preloaded format=pdflatex 2023.7.5)  6 JUL 2023 14:27
+This is pdfTeX, Version 3.141592653-2.6-1.40.25 (MiKTeX 23.4) (preloaded format=pdflatex 2023.7.5)  6 JUL 2023 14:51
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -777,33 +777,28 @@ Underfull \hbox (badness 10000) in paragraph at lines 120--121
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 127--129
+Underfull \hbox (badness 10000) in paragraph at lines 130--132
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 145--147
+Underfull \hbox (badness 10000) in paragraph at lines 137--139
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 152--154
+Underfull \hbox (badness 10000) in paragraph at lines 150--152
 
  []
 
-
-Underfull \hbox (badness 10000) in paragraph at lines 165--167
-
- []
-
-[2 <./MFSK_model.png> <./MASK_model.png>] (Report.bbl
+(Report.bbl [2 <./MFSK_model.png> <./MASK_model.png>]
 ** WARNING: IEEEtran.bst: No hyphenation pattern has been
 ** loaded for the language `en'. Using the pattern for
 ** the default language instead.
 
-Overfull \hbox (3.04533pt too wide) in paragraph at lines 31--36
-\OT1/ptm/m/n/8 http://ebookcentral.proquest.com/lib/bristol/detail.action?docID
-=5430709 
+Underfull \hbox (badness 1400) in paragraph at lines 31--36
+\OT1/ptm/m/it/8 Prin-ci-ples and Ap-pli-ca-tions, Third Edi-tion\OT1/ptm/m/n/8 
+. Nor-wood,
  []
 
 ** WARNING: IEEEtran.bst: No hyphenation pattern has been
@@ -847,32 +842,29 @@ LaTeX Warning: There were multiply-defined labels.
 
  ) 
 Here is how much of TeX's memory you used:
- 15817 strings out of 476331
- 320287 string characters out of 5787766
- 1865660 words of memory out of 5000000
- 35991 multiletter control sequences out of 15000+600000
+ 15815 strings out of 476331
+ 320361 string characters out of 5787766
+ 1864660 words of memory out of 5000000
+ 35989 multiletter control sequences out of 15000+600000
  548983 words of font info for 103 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 84i,9n,80p,674b,471s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 84i,9n,80p,735b,471s stack positions out of 10000i,1000n,20000p,200000b,200000s
 <C:/Users/bearb/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/
-cmex10.pfb><C:/Users/bearb/AppData/Local/Programs/MiKTeX/fonts/type1/public/ams
-fonts/cm/cmmi10.pfb><C:/Users/bearb/AppData/Local/Programs/MiKTeX/fonts/type1/p
-ublic/amsfonts/cm/cmmi7.pfb><C:/Users/bearb/AppData/Local/Programs/MiKTeX/fonts
-/type1/public/amsfonts/cm/cmmi9.pfb><C:/Users/bearb/AppData/Local/Programs/MiKT
-eX/fonts/type1/public/amsfonts/cm/cmr10.pfb><C:/Users/bearb/AppData/Local/Progr
-ams/MiKTeX/fonts/type1/public/amsfonts/cm/cmr5.pfb><C:/Users/bearb/AppData/Loca
-l/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr7.pfb><C:/Users/bearb/AppDa
-ta/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr9.pfb><C:/Users/bear
-b/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy10.pfb><C:/U
-sers/bearb/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy7.p
-fb><C:/Users/bearb/AppData/Local/Programs/MiKTeX/fonts/type1/urw/times/utmb8a.p
-fb><C:/Users/bearb/AppData/Local/Programs/MiKTeX/fonts/type1/urw/times/utmbi8a.
-pfb><C:/Users/bearb/AppData/Local/Programs/MiKTeX/fonts/type1/urw/times/utmr8a.
-pfb><C:/Users/bearb/AppData/Local/Programs/MiKTeX/fonts/type1/urw/times/utmri8a
-.pfb>
-Output written on Report.pdf (3 pages, 340695 bytes).
+cmmi10.pfb><C:/Users/bearb/AppData/Local/Programs/MiKTeX/fonts/type1/public/ams
+fonts/cm/cmmi7.pfb><C:/Users/bearb/AppData/Local/Programs/MiKTeX/fonts/type1/pu
+blic/amsfonts/cm/cmmi9.pfb><C:/Users/bearb/AppData/Local/Programs/MiKTeX/fonts/
+type1/public/amsfonts/cm/cmr10.pfb><C:/Users/bearb/AppData/Local/Programs/MiKTe
+X/fonts/type1/public/amsfonts/cm/cmr7.pfb><C:/Users/bearb/AppData/Local/Program
+s/MiKTeX/fonts/type1/public/amsfonts/cm/cmr9.pfb><C:/Users/bearb/AppData/Local/
+Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy10.pfb><C:/Users/bearb/AppDa
+ta/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy7.pfb><C:/Users/bea
+rb/AppData/Local/Programs/MiKTeX/fonts/type1/urw/times/utmb8a.pfb><C:/Users/bea
+rb/AppData/Local/Programs/MiKTeX/fonts/type1/urw/times/utmbi8a.pfb><C:/Users/be
+arb/AppData/Local/Programs/MiKTeX/fonts/type1/urw/times/utmr8a.pfb><C:/Users/be
+arb/AppData/Local/Programs/MiKTeX/fonts/type1/urw/times/utmri8a.pfb>
+Output written on Report.pdf (3 pages, 320374 bytes).
 PDF statistics:
- 93 PDF objects out of 1000 (max. 8388607)
+ 83 PDF objects out of 1000 (max. 8388607)
  0 named destinations out of 1000 (max. 500000)
  28 words of extra memory for PDF output out of 10000 (max. 10000000)
 

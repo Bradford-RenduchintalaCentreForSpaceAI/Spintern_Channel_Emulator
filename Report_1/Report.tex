@@ -17,7 +17,7 @@
     T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
 \begin{document}
 
-\title{Software Defined Radio Channel emulator for Satellite based communication systems initial report}
+\title{Software Defined Radio Channel emulator for Satellite based GNSS communication systems initial report}
 
 \author{\IEEEauthorblockN{George Burns}
 \IEEEauthorblockA{\textit{dept. Electrical and Electronic Engineering} \\
@@ -29,7 +29,7 @@ george.burns.2001@bristol.ac.uk}
 \maketitle
 
 \begin{abstract}
-This report will detail proposed methods to simulate radio frequency (RF) wave propagation of $1G Hz$ too $350G Hz$ satellite communication systems. It will detail the standards and mathematical models used to simulate some off the effects of on the propagation of RF waves through a Earth to space medium. There will also be detail on the modulation schemes used to test such simulation methods.
+This report will detail proposed methods to simulate radio frequency (RF) wave propagation of \textbf{$1G Hz$} too \textbf{$350G Hz$} satellite communication systems. It will detail the standards and mathematical models used to simulate some off the effects of on the propagation of RF waves through a Earth to space medium. There will also be detail on the modulation schemes used to test such simulation methods.
 \end{abstract}
 
 \section{Introduction}
@@ -45,7 +45,7 @@ Using \cite{seybold_introduction_2005} as a basic reference point a basic model 
 
 The Majority of the work will be focused on the Channel Emulator part of the system.\\
 
-The Emulator will primarily focus on the following effects; Free space loss, Atmospheric Effects, Rain Fade, Noise Temperature, multipath fading and scintillation and the effects of orbit. All of these effects have a significant impact on the channel. They are both complex and real degradation. This means that for an electromagnetic wave represented as $Ae^{j w t+\theta}$, the channel will degrade the amplitude ($A$), the phase ($\theta$), and the frequency ($w = 2\pi f$), where $f$ is the frequency and $j= \sqrt{-1}$ is the imaginary number. These effects where chosen in accordance with \cite{kaplan_understanding_2017}  \\
+The Emulator will primarily focus on the following effects; Free space loss, Atmospheric Effects, Rain Fade, Noise Temperature, multipath fading and scintillation and the effects of orbit. All of these effects have a significant impact on the channel. They are both complex and real degradation. This means that for an electromagnetic wave represented as $Ae^{j w t+\theta}$, the channel will degrade the amplitude ($A$), the phase ($\theta$), and the frequency ($w = 2\pi f$), where $f$ is the frequency and $j= \sqrt{-1}$ is the imaginary number. These effects where chosen in accordance with \cite{kaplan_understanding_2017} which details these effects as being prominent in GNSS systems\\
 
 These are also dependent on time as during the orbital period of the satellite both slant angle \cite{seybold_introduction_2005} and if the orbit is elliptical \cite{10.5555/2601574} the distance can also change, these effects will be detailed in section \ref{sec:7})
 \label{sec:intro}
@@ -116,25 +116,10 @@ Hydrometeors are small water particles in the atmosphere can cause RF attenuatio
 \label{sec:4}
 
 
-\section{Scintillation and multipath fading}
+\section{Scintillation}
 Scintillation can both be accounted for using ITU recommendations in \cite{ITU-R_P.618-7} both for $\theta> 5°$ and $\theta < 5°$. These are all dependent on location and measurements from that area for parameters such as average humidity and temperature. For frequencies below $10G Hz$ Scintillation is more prevalent in the ionosphere and can be accounted for using \cite{ITU-R_P.531-14}.\\
 
-For the multipath model the signal will experience $N$ paths each introducing a Rayleigh fading channel characteristic  based on \cite{hou_simulation_2019}. The Rayleigh distribution (equation)
 
-\begin{equation}
-f_X(t, \sigma) \frac{t}{\sigma^2}e^{-t^2/2 \sigma^2}, \quad t\geq  0
-\label{eq:Rayleigh_distribution_equation}
-\end{equation}
-Where $t$ is the perceived time after the input and $\sigma^2$ is the variance.\\
-
-This in conjunction with the multipath model equation
-
-
-\begin{equation}
-y(t) = \sum_{n=0}^N = a_n(t) x(t-t_n(t))
-\label{eq:Multipath_model}
-\end{equation}
-Where $y(t)$ is the output $a_n(t)$ is the attenuation constant modelled by \ref{eq:Rayleigh_distribution_equation} and $t_n(t)$ is the time delay modelled by \ref{eq:Rayleigh_distribution_equation}.
 \label{sec:5}
 
 \section{Noise temperature}
@@ -168,8 +153,8 @@ Where $f_{new}$ is the perceived frequency of the RF wave, $v_s$ is the speed of
 This equation is significant as the majority of the effects covered previously depend on the perceived frequency $f_{new}$. It also can cause issues for MFSK mentioned in section \ref{sec:1} as if there is a dramatic frequency shift in the RF signal bits can be perceived wrong when being de-modulated. This effect is extremely prevalent on systems where the speed of the source (satellite) is not constant during the orbital window as this can mean a frequency change during the pass and thus the de-coding system is time dependent thus this aspect of the project is extremely important.
 \label{sec:6}
 
-\section{sec:Orbital considerations}
-x
+\section{Orbital considerations}
+In previous sections particular attention has been paid to slant path $r_s$ this is especially important when considering satellite systems with elliptical orbits as the slant range is not constant for the orbital period. This no doubt changes a large amount of parameters outlines previously and the system becomes highly dynamic. 
 \label{sec:7}
 \bibliographystyle{IEEEtran}
 \bibliography{My_Library}

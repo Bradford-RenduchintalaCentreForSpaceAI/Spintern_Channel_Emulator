@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.25 (MiKTeX 23.4) (preloaded format=pdflatex 2023.7.5)  6 JUL 2023 16:54
+This is pdfTeX, Version 3.141592653-2.6-1.40.25 (MiKTeX 23.4) (preloaded format=pdflatex 2023.7.5)  7 JUL 2023 10:19
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -619,11 +619,7 @@ tex.def
 File: l3backend-pdftex.def 2023-03-30 L3 backend support: PDF output (pdfTeX)
 \l__color_backend_stack_int=\count308
 \l__pdf_internal_box=\box68
-) (Report.aux
-
-LaTeX Warning: Label `sec:5' multiply defined.
-
-)
+) (Report.aux)
 \openout1 = `Report.aux'.
 
 LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 18.
@@ -777,31 +773,37 @@ Underfull \hbox (badness 10000) in paragraph at lines 120--121
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 130--132
+Underfull \hbox (badness 10000) in paragraph at lines 132--134
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 137--139
+LaTeX Warning: Reference `sec:2' on page 2 undefined on input line 140.
+
+
+LaTeX Warning: Reference `sec:3' on page 2 undefined on input line 140.
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 139--141
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 150--152
+Underfull \hbox (badness 10000) in paragraph at lines 152--154
 
  []
 
-
-Underfull \hbox (badness 2181) in paragraph at lines 157--158
+[2 <./MFSK_model.png> <./MASK_model.png>]
+Underfull \hbox (badness 2181) in paragraph at lines 159--160
 \OT1/ptm/m/n/10 be-comes highly dy-namic thus all pre-vi-ously men-tioned
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 157--158
+Underfull \hbox (badness 10000) in paragraph at lines 159--160
 
  []
 
-[2 <./MFSK_model.png> <./MASK_model.png>] (Report.bbl
+(Report.bbl
 ** WARNING: IEEEtran.bst: No hyphenation pattern has been
 ** loaded for the language `en'. Using the pattern for
 ** the default language instead.
@@ -848,17 +850,17 @@ Before submitting the final camera ready copy, remember to:
 
 ] (Report.aux)
 
-LaTeX Warning: There were multiply-defined labels.
+LaTeX Warning: There were undefined references.
 
  ) 
 Here is how much of TeX's memory you used:
- 15815 strings out of 476331
- 320361 string characters out of 5787766
+ 15819 strings out of 476331
+ 320451 string characters out of 5787766
  1864660 words of memory out of 5000000
- 35989 multiletter control sequences out of 15000+600000
- 548983 words of font info for 103 fonts, out of 8000000 for 9000
+ 35992 multiletter control sequences out of 15000+600000
+ 550090 words of font info for 104 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 84i,9n,80p,735b,471s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 84i,9n,80p,736b,471s stack positions out of 10000i,1000n,20000p,200000b,200000s
 <C:/Users/bearb/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/
 cmmi10.pfb><C:/Users/bearb/AppData/Local/Programs/MiKTeX/fonts/type1/public/ams
 fonts/cm/cmmi7.pfb><C:/Users/bearb/AppData/Local/Programs/MiKTeX/fonts/type1/pu
@@ -872,7 +874,7 @@ rb/AppData/Local/Programs/MiKTeX/fonts/type1/urw/times/utmb8a.pfb><C:/Users/bea
 rb/AppData/Local/Programs/MiKTeX/fonts/type1/urw/times/utmbi8a.pfb><C:/Users/be
 arb/AppData/Local/Programs/MiKTeX/fonts/type1/urw/times/utmr8a.pfb><C:/Users/be
 arb/AppData/Local/Programs/MiKTeX/fonts/type1/urw/times/utmri8a.pfb>
-Output written on Report.pdf (3 pages, 320677 bytes).
+Output written on Report.pdf (3 pages, 321873 bytes).
 PDF statistics:
  83 PDF objects out of 1000 (max. 8388607)
  0 named destinations out of 1000 (max. 500000)

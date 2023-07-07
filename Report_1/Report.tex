@@ -47,7 +47,7 @@ The Majority of the work will be focused on the Channel Emulator part of the sys
 
 The Emulator will primarily focus on the following effects; Free space loss, Atmospheric Effects, Rain Fade, Noise Temperature, multipath fading and scintillation and the effects of orbit. All of these effects have a significant impact on the channel. They are both complex and real degradation. This means that for an electromagnetic wave represented as $Ae^{j w t+\theta}$, the channel will degrade the amplitude ($A$), the phase ($\theta$), and the frequency ($w = 2\pi f$), where $f$ is the frequency and $j= \sqrt{-1}$ is the imaginary number. These effects where chosen in accordance with \cite{kaplan_understanding_2017} which details these effects as being prominent in GNSS systems.\\
 
-These effects are dependent on time as during the orbital period of the satellite both slant angle \cite{seybold_introduction_2005} and if the orbit is elliptical \cite{10.5555/2601574} the distance can also change, these effects will be detailed in section \ref{sec:7}).
+These effects are also dependent on time as during the orbital period of the satellite both slant angle \cite{seybold_introduction_2005} and if the orbit is elliptical \cite{10.5555/2601574} the distance can also change, these effects will be detailed in section \ref{sec:Orbital}).
 \label{sec:intro}
 
 
@@ -71,11 +71,11 @@ A large variety of modulation schemes are used in satellite communications \cite
 \caption{Modulation Schemes diagrams}
 \label{fig:Moduluation_models}
 \end{figure}
-\label{sec:1}
+\label{sec:Modulation}
 
 
 \section{Free Space loss}
-Equation \ref{eq:Free_space_equation} is used to model free space loss, $r_s$ is usually just distance on a terrestrial plane however slant path needs to be accounted for which can be calculated using Equation \ref{eq:Slant_path_equation}.\\
+Equation \ref{eq:Free_space_equation} is used to model free space loss, $r_s$ is usually just distance on a terrestrial plane however slant path needs to be accounted for space-Earth paths. $r_s$ can be calculated using Equation \ref{eq:Slant_path_equation}.\\
 \begin{equation}
 A_{fs} = \frac{A_r A_t}{\lambda^2 r_s^2}
 \label{eq:Free_space_equation}
@@ -91,38 +91,38 @@ r_s = \frac{h sin(\psi)}{sin(\frac{\pi}{2}+\theta)}
 
 Where $h$ is the height above Earth, $r_e$ is Earth's radius $6378K m$, $\theta$ is the elevation angle and $\psi$ is the central angle determined by equation \ref{eq:Central_angle_equation}.\\
 
-Thus as the satellite changes distance (slant path $r_s$), the free space attenuation changes. Also Doppler effects cause frequency changes in \ref{sec:6}.  
+Thus as the satellite changes distance (slant path $r_s$), the free space attenuation changes. Also Doppler effects cause frequency changes and thus wavelength ($\lambda$) changes explained more in \ref{sec:Doppler}.  
 
 \begin{equation}
 \psi = cos^{-1}(\frac{r_e}{h}(sin(\frac{\pi}{2}+\theta))-\theta
 \label{eq:Central_angle_equation}
 \end{equation}
 
-\label{sec:2}
+\label{sec:Free_space}
 
 \section{Atmospheric Attenuation}
-Effects of the atmosphere along the slant path $r_s$ must be considered when modelling RF propagation through Earth's atmosphere, its effects can be mathematically modelled as having distinct layers. The full mathematical model is complex so the goal was to use the International Telecommunications Union's curve fitting process. Using \cite{ITU-R_P.676-5} to gain $\gamma_{o}$ the oxygen attenuation and $\gamma_w$ the water attenuation we can get an expression for atmospheric attenuation from \cite{ITU-R_P.618-7} to form equation \ref{eq:Atmospheric_attenuation_equation}.
+Effects of the atmosphere along the slant path $r_s$ must be considered when modelling RF propagation through Earth's atmosphere, its effects can be mathematically modelled as having distinct layers. The full mathematical model is complex so the goal was to use the International Telecommunications Union's (ITU) curve fitting process. Using \cite{ITU-R_P.676-5} to gain $\gamma_{o}$ the oxygen attenuation and $\gamma_w$ the water attenuation we can get an expression for atmospheric attenuation from \cite{ITU-R_P.618-7} to form equation \ref{eq:Atmospheric_attenuation_equation}.
 \begin{equation}
 A_a = \frac{h_o \gamma_o + h_w \gamma_w}{sin(\theta)}
 \label{eq:Atmospheric_attenuation_equation}
 \end{equation}
 Where $A_a$ is the atmosphere attenuation in $dB$, $h_0$ is the oxygen height and $h_w$ is the water vapour height both obtained by using the curve fit equation found in \cite{ITU-R_P.618-7}.
 
-\label{sec:3}
+\label{sec:Atmosphere}
 
 \section{Rain Attenuation}
 Hydrometeors are small water particles in the atmosphere can cause RF attenuation and thus must be accounted for in the model ITU provides a suitable model where \cite{ITU-R_P.837-1} provides the $R_{0.001}$ rain statistic. Then in conjunction with \cite{ITU-R_P.618-7} we can develop the rain model necessary.\\
 
-\label{sec:4}
+\label{sec:Rain}
 
 
 \section{Scintillation}
 Scintillation can both be accounted for using ITU recommendations in \cite{ITU-R_P.618-7} both for $\theta> 5°$ and $\theta < 5°$. These are all dependent on location and measurements from that area for parameters such as average humidity and temperature. For frequencies below $10G Hz$ Scintillation is more prevalent in the ionosphere and can be accounted for using models present in \cite{ITU-R_P.531-14}.\\ 
 
-Scintillation in the troposphere can also again be modelled by \cite{ITU-R_P.618-7} and is more relevant to 
+Scintillation in the troposphere can also again be modelled by \cite{ITU-R_P.618-7} and is more relevant to this projects as it details the scintillation prevalent in the troposphere at $f > 1G Hz$. Thus this mathematical model will be used to model scintillation.
 
 
-\label{sec:5}
+\label{sec:Scintillation}
 
 \section{Noise temperature}
 The noise equation (equation \ref{:eq:Noise_equation}) states that noise is directly proportional to temperature. 
@@ -141,25 +141,25 @@ Where $T_s[K]$ is the temperature seen at the antenna in kelvin, $A[dB]$ is path
 
 Thus substituting $T_s$ in \ref{eq:Noise_temp_equation} with $T$ in \ref{:eq:Noise_equation} we can find a suitable value for noise in the system.
 
-\label{sec:5}
+\label{sec:Noise_temp}
 
 
 \section{Doppler effect}
-When an object is moving at high speeds it experiences the Doppler effect. To model this equation X can be used. 
+When an object is moving at high speeds it experiences the Doppler effect. To model this equation \ref{eq:Doppler_effect_equation} can be used. 
 \begin{equation}
 f_{new} =(\frac{v_d+c}{v_s+c})f
 \label{eq:Doppler_effect_equation}
 \end{equation}
 Where $f_{new}$ is the perceived frequency of the RF wave, $v_s$ is the speed of RF source, $v_d$ is the speed of receiver, $c$ is the speed of light in the medium and $f$ is the original frequency.\\
 
-This equation is significant as the majority of the effects covered previously depend on the perceived frequency $f_{new}$. It also can cause issues for MFSK mentioned in section \ref{sec:1} as if there is a dramatic frequency shift in the RF signal bits can be perceived wrong when being de-modulated. This effect is extremely prevalent on systems where the speed of the source (satellite) is not constant during the orbital window as this can mean a frequency change during the pass and thus the de-coding system is time dependent thus this aspect of the project is extremely important.
-\label{sec:6}
+This equation is significant as the majority of the effects covered previously depend on the perceived frequency $f_{new}$. It also can cause issues for MFSK mentioned in section \ref{sec:Modulation} as if there is a dramatic frequency shift in the RF signal bits can be perceived wrong when being de-modulated. This effect is extremely prevalent on systems where the speed of the source (satellite) is not constant during the orbital window as this can mean a frequency change during the pass and thus the de-coding system is time dependent thus this aspect of the project is extremely important.
+\label{sec:Doppler}
 
 \section{Orbital considerations}
 In previous sections particular attention has been paid to slant path $r_s$ this is especially important when considering satellite systems with elliptical orbits as the slant range is not constant for the orbital period. This no doubt changes a large amount of parameters outlines previously and the system becomes highly dynamic thus all previously mentioned sources of channel degradation change significantly during the orbital period of satellite.\\
 
 All this can be calculated using an orbital propagator like SGP4 that takes two line element (TLE) inputs and returns the height of the satellite that can then be used to find the slant height from \ref{eq:Slant_path_equation} and inclination is directly obtained from the TLE.
-\label{sec:7}
+\label{sec:Orbital}
 \bibliographystyle{IEEEtran}
 \bibliography{My_Library}
 \end{document}

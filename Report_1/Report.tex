@@ -17,7 +17,7 @@
     T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
 \begin{document}
 
-\title{Software Defined Radio Channel emulator for Satellite based GNSS communication systems initial report}
+\title{Software Defined Radio Channel emulator GNSS\\ \large{\textit{Initial report}}}
 
 \author{\IEEEauthorblockN{George Burns}
 \IEEEauthorblockA{\textit{dept. Electrical and Electronic Engineering} \\
@@ -27,13 +27,12 @@ george.burns.2001@bristol.ac.uk}
 }
 
 \maketitle
-
 \begin{abstract}
-This report will detail proposed methods to simulate radio frequency (RF) wave propagation of \textbf{$1G Hz$} too \textbf{$350G Hz$} satellite communication systems. It will detail the standards and mathematical models used to simulate some off the effects of on the propagation of RF waves through a Earth to space medium. There will also be detail on the modulation schemes used to test such simulation methods.
+This report will detail proposed methods to simulate radio frequency (RF) wave propagation in the L-Band frequency range. It will detail the standards and mathematical models used to simulate some off the effects of on the propagation of RF waves from a satellite in orbit around the Earth to a ground station on Earth. There will also be detail on the modulation schemes used to test such simulation methods.
 \end{abstract}
 
 \section{Introduction}
-In this section there will be a list of the effects that will be detailed in this report and simulated in the Channel Emulator. Satellite communications come under attenuation both complex and real. Most channel emulators for these effects are expensive and hard to implement however the aim of this projects is to construct software that simulates these effects.\\
+In this section there will be a list of the effects that will be detailed in this report and simulated in the Channel Emulator. Satellite communications come under attenuation both complex and real \cite{seybold_introduction_2005}. Most channel emulators for these effects are expensive and hard to implement however the aim of this projects is to construct software that simulates these effects.\\
 
 Using \cite{seybold_introduction_2005} as a basic reference point a basic model can be constructed. As shown in Figure \ref{fig:System_model}. 
 \begin{figure}[h]
@@ -45,43 +44,32 @@ Using \cite{seybold_introduction_2005} as a basic reference point a basic model 
 
 The Majority of the work will be focused on the Channel Emulator part of the system.\\
 
-The Emulator will primarily focus on the following effects; Free space loss, Atmospheric Effects, Rain Fade, Noise Temperature, multipath fading and scintillation and the effects of orbit. All of these effects have a significant impact on the channel. They are both complex and real degradation. This means that for an electromagnetic wave represented as $Ae^{j w t+\theta}$, the channel will degrade the amplitude ($A$), the phase ($\theta$), and the frequency ($w = 2\pi f$), where $f$ is the frequency and $j= \sqrt{-1}$ is the imaginary number. These effects where chosen in accordance with \cite{kaplan_understanding_2017} which details these effects as being prominent in GNSS systems.\\
+The Emulator will primarily focus on the following effects; Free space loss, Atmospheric Effects, Rain Fade, Noise Temperature, multipath fading and scintillation and the effects of orbit. All of these effects have a significant impact on the channel \cite{kaplan_understanding_2017}. Effects like multipath and sun outages are not being considered in this project as they are beyond the scope are highly area and condition dependent. All the effects stated previously are both complex and real impairment. This means that for an electromagnetic wave represented as $Ae^{j w t+\theta}$, the channel will impair the amplitude ($A$), the phase ($\theta$), and the frequency ($w = 2\pi f$), where $f$ is the frequency and $j= \sqrt{-1}$ is the imaginary number. These effects where chosen in accordance with \cite{kaplan_understanding_2017} which details these effects as being prominent in GNSS systems.\\
 
-These effects are also dependent on time as during the orbital period of the satellite both slant angle \cite{seybold_introduction_2005} and if the orbit is elliptical \cite{10.5555/2601574} the distance can also change, these effects will be detailed in section \ref{sec:Orbital}).
+These effects are also dependent on time as during the orbital period of the satellite both slant angle \cite{seybold_introduction_2005} and the distance can also change \cite{10.5555/2601574}, these effects will be detailed in section \ref{sec:Orbital}). Effects like ionospheric effects and rain attenuation are also dependent on time and location as well as weather conditions.
 \label{sec:intro}
 
 
-\section{Modulation}
+\section{Modulation TOO BE REVISED}
 A large variety of modulation schemes are used in satellite communications \cite{smith_modulation_2017}. For this project I will aim to employ multi-level frequency shift keying (MFSK) and multi-level amplitude shift keying (MASK) shown in both Figure \ref{fig:Moduluation_models}. This was a good way to progress onto more complicated modulation schemes like quadrature amplitude modulation (QAM) and multi-level phase shift keying (PSK).
-\begin{figure}[h]
-\centering
-\begin{subfigure}{0.5\textwidth}
-	\centering
-	\includegraphics[width=\textwidth]{MFSK_model.png}
-	\caption{MFSK Model}
-	\label{fig:MFSK_model}
-\end{subfigure}
-\centering
-\begin{subfigure}{0.5\textwidth}
-	\centering
-	\includegraphics[width=\textwidth]{MASK_model.png}
-	\caption{MASK Model}
-	\label{fig:MASK_model}
-\end{subfigure}
-\caption{Modulation Schemes diagrams}
-\label{fig:Moduluation_models}
-\end{figure}
+
 \label{sec:Modulation}
 
 
 \section{Free Space loss}
-Equation \ref{eq:Free_space_equation} is used to model free space loss, $r_s$ is usually just distance on a terrestrial plane however slant path needs to be accounted for space-Earth paths. $r_s$ can be calculated using Equation \ref{eq:Slant_path_equation}.\\
+Equation \ref{eq:Free_space_equation} is used to model free space loss. Free space loss is the natural loss that occurs between all RF communication links \cite{seybold_introduction_2005} however for Earth to space extra factors need to be considered. On the terrestrial plane $r_s$ is usually just distance on a terrestrial plane however slant path needs to be accounted for space-Earth paths. $r_s$ can be calculated using Equation \ref{eq:Slant_path_equation} and is shown in Figure \ref{fig:Slant_path_illustration}\\
 \begin{equation}
 A_{fs} = \frac{A_r A_t}{\lambda^2 r_s^2}
 \label{eq:Free_space_equation}
 \end{equation}
 
 Where $A_{fs}$ is free space loss, $A_r$ and $A_t$ are the area of transmitter and receiver antenna respectively $\lambda$ is wavelength and $r_s$ is slant path.\\
+\begin{figure}[h]
+\centering
+	\includegraphics[width = 0.45\textwidth]{Slant_path.png}
+	\caption{Slant Path illustration from \cite{seybold_introduction_2005}}
+	\label{fig:Slant_path_illustration}
+\end{figure}
 
 
 \begin{equation}
@@ -111,7 +99,7 @@ Where $A_a$ is the atmosphere attenuation in $dB$, $h_0$ is the oxygen height an
 \label{sec:Atmosphere}
 
 \section{Rain Attenuation}
-Hydrometeors are small water particles in the atmosphere can cause RF attenuation and thus must be accounted for in the model ITU provides a suitable model where \cite{ITU-R_P.837-1} provides the $R_{0.001}$ rain statistic. Then in conjunction with \cite{ITU-R_P.618-7} we can develop the rain model necessary.\\
+Hydrometeors are small water particles in the atmosphere can cause RF attenuation and thus must be accounted for in the model ITU provides a suitable model where \cite{ITU-R_P.837-1} provides the $R_{0.001}$ rain statistic which is the $0.01\%$ rainfall rate for the specified latitude and longitude. Then in conjunction with \cite{ITU-R_P.618-7} we can develop the rain model necessary. This factor is dependent on frequency, pressure, temperature, surface height of the antenna and many other factors. The final output produces a overall probability of a certain $dB$.\\
 
 \label{sec:Rain}
 
@@ -137,9 +125,9 @@ Temperature can effected by a large array of systems and are detailed further in
 T_s = T_m(1-10^{-A/10})
 \label{eq:Noise_temp_equation}
 \end{equation}
-Where $T_s[K]$ is the temperature seen at the antenna in kelvin, $A[dB]$ is path attenuation found in both \ref{sec:2} and \ref{sec:3} and $T_m [K]$ is the effective temperature in Kelvin.\\
+Where $T_s[K]$ is the temperature seen at the antenna in kelvin, $A[dB]$ is path attenuation found in both \ref{sec:Free_space} and \ref{sec:Atmosphere} and $T_m [K]$ is the effective temperature in Kelvin.\\
 
-Thus substituting $T_s$ in \ref{eq:Noise_temp_equation} with $T$ in \ref{:eq:Noise_equation} we can find a suitable value for noise in the system.
+Thus substituting $T_s$ in \ref{eq:Noise_temp_equation} with $T$ in \ref{:eq:Noise_equation} we can find a suitable value for noise in the system. This is relevant as $T_s$ is highly dependent on atmosphere temperature. 
 
 \label{sec:Noise_temp}
 

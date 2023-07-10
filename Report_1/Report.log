@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.25 (MiKTeX 23.4) (preloaded format=pdflatex 2023.7.5)  7 JUL 2023 10:19
+This is pdfTeX, Version 3.141592653-2.6-1.40.25 (MiKTeX 23.4) (preloaded format=pdflatex 2023.7.5)  10 JUL 2023 11:19
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -666,140 +666,115 @@ File: epstopdf-sys.cfg 2021/03/18 v2.0 Configuration of epstopdf for MiKTeX
 ))
 Package caption Info: Begin \AtBeginDocument code.
 Package caption Info: End \AtBeginDocument code.
-LaTeX Font Info:    Trying to load font information for U+msa on input line 32.
 
- (C:\Users\bearb\AppData\Local\Programs\MiKTeX\tex/latex/amsfonts\umsa.fd
+Underfull \hbox (badness 10000) in paragraph at lines 35--36
+
+ []
+
+<System_model.png, id=4, 371.88937pt x 359.84438pt>
+File: System_model.png Graphic file (type png)
+<use System_model.png>
+Package pdftex.def Info: System_model.png  used on input line 40.
+(pdftex.def)             Requested size: 232.19843pt x 224.68254pt.
+
+Underfull \hbox (badness 10000) in paragraph at lines 45--46
+
+ []
+
+LaTeX Font Info:    Trying to load font information for U+msa on input line 47.
+
+(C:\Users\bearb\AppData\Local\Programs\MiKTeX\tex/latex/amsfonts\umsa.fd
 File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 )
-LaTeX Font Info:    Trying to load font information for U+msb on input line 32.
+LaTeX Font Info:    Trying to load font information for U+msb on input line 47.
 
 
 (C:\Users\bearb\AppData\Local\Programs\MiKTeX\tex/latex/amsfonts\umsb.fd
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 )
-Underfull \hbox (badness 10000) in paragraph at lines 36--37
-
- []
-
-<System_model.png, id=4, 752.0597pt x 284.56313pt>
-File: System_model.png Graphic file (type png)
-<use System_model.png>
-Package pdftex.def Info: System_model.png  used on input line 41.
-(pdftex.def)             Requested size: 232.19843pt x 87.8576pt.
-
-Underfull \hbox (badness 10000) in paragraph at lines 46--47
+Underfull \hbox (badness 10000) in paragraph at lines 47--48
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 48--49
+LaTeX Warning: Reference `fig:Moduluation_models' on page 1 undefined on input 
+line 54.
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 60--61
 
  []
 
-<MFSK_model.png, id=6, 609.02531pt x 502.12593pt>
-File: MFSK_model.png Graphic file (type png)
-<use MFSK_model.png>
-Package pdftex.def Info: MFSK_model.png  used on input line 60.
-(pdftex.def)             Requested size: 258.0pt x 212.72263pt.
-<MASK_model.png, id=7, 764.10469pt x 338.01282pt>
-File: MASK_model.png Graphic file (type png)
-<use MASK_model.png>
-Package pdftex.def Info: MASK_model.png  used on input line 67.
-(pdftex.def)             Requested size: 258.0pt x 114.12856pt.
-
-Overfull \hbox (6.0pt too wide) in paragraph at lines 58--71
- [][] 
- []
-
-
-Overfull \hbox (6.0pt too wide) in paragraph at lines 58--71
- [] 
- []
-
-
-LaTeX Warning: `h' float specifier changed to `ht'.
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 78--79
-
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 84--85
-
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 92--93
-
- []
-
+<Slant_path.png, id=6, 402.00188pt x 440.39531pt>
+File: Slant_path.png Graphic file (type png)
+<use Slant_path.png>
+Package pdftex.def Info: Slant_path.png  used on input line 69.
+(pdftex.def)             Requested size: 232.19843pt x 254.37444pt.
 [1{C:/Users/bearb/AppData/Local/MiKTeX/fonts/map/pdftex/pdftex.map}{C:/Users/be
 arb/AppData/Local/Programs/MiKTeX/fonts/enc/dvips/base/8r.enc}
 
 
  <./System_model.png>]
-Underfull \hbox (badness 10000) in paragraph at lines 114--115
+Underfull \hbox (badness 10000) in paragraph at lines 80--81
 
  []
 
 
-LaTeX Warning: Command \textdegree invalid in math mode on input line 120.
+Underfull \hbox (badness 10000) in paragraph at lines 102--103
+
+ []
+
+
+LaTeX Warning: Command \textdegree invalid in math mode on input line 108.
 
 LaTeX Font Info:    Trying to load font information for TS1+ptm on input line 1
-20.
+08.
 (C:\Users\bearb\AppData\Local\Programs\MiKTeX\tex/latex/psnfss\ts1ptm.fd
 File: ts1ptm.fd 2001/06/04 font definitions for TS1/ptm.
 )
 
-LaTeX Warning: Command \textdegree invalid in math mode on input line 120.
+LaTeX Warning: Command \textdegree invalid in math mode on input line 108.
 
 Missing character: There is no ° in font cmr10!
 
-LaTeX Warning: Command \textdegree invalid in math mode on input line 120.
+LaTeX Warning: Command \textdegree invalid in math mode on input line 108.
 
 
-LaTeX Warning: Command \textdegree invalid in math mode on input line 120.
+LaTeX Warning: Command \textdegree invalid in math mode on input line 108.
 
 Missing character: There is no ° in font cmr10!
 
-Underfull \hbox (badness 4353) in paragraph at lines 120--121
+Underfull \hbox (badness 4353) in paragraph at lines 108--109
 []\OT1/ptm/m/n/10 Scintillation can both be ac-counted for us-ing ITU
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 120--121
+Underfull \hbox (badness 10000) in paragraph at lines 108--109
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 132--134
+Underfull \hbox (badness 10000) in paragraph at lines 120--122
 
  []
 
 
-LaTeX Warning: Reference `sec:2' on page 2 undefined on input line 140.
-
-
-LaTeX Warning: Reference `sec:3' on page 2 undefined on input line 140.
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 139--141
+Underfull \hbox (badness 10000) in paragraph at lines 127--129
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 152--154
+Underfull \hbox (badness 10000) in paragraph at lines 140--142
 
  []
 
-[2 <./MFSK_model.png> <./MASK_model.png>]
-Underfull \hbox (badness 2181) in paragraph at lines 159--160
+[2 <./Slant_path.png>]
+Underfull \hbox (badness 2181) in paragraph at lines 147--148
 \OT1/ptm/m/n/10 be-comes highly dy-namic thus all pre-vi-ously men-tioned
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 159--160
+Underfull \hbox (badness 10000) in paragraph at lines 147--148
 
  []
 
@@ -854,29 +829,27 @@ LaTeX Warning: There were undefined references.
 
  ) 
 Here is how much of TeX's memory you used:
- 15819 strings out of 476331
- 320451 string characters out of 5787766
- 1864660 words of memory out of 5000000
- 35992 multiletter control sequences out of 15000+600000
- 550090 words of font info for 104 fonts, out of 8000000 for 9000
+ 15780 strings out of 476331
+ 319926 string characters out of 5787766
+ 1865660 words of memory out of 5000000
+ 35961 multiletter control sequences out of 15000+600000
+ 547046 words of font info for 92 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 84i,9n,80p,736b,471s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 84i,8n,80p,989b,316s stack positions out of 10000i,1000n,20000p,200000b,200000s
 <C:/Users/bearb/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/
 cmmi10.pfb><C:/Users/bearb/AppData/Local/Programs/MiKTeX/fonts/type1/public/ams
 fonts/cm/cmmi7.pfb><C:/Users/bearb/AppData/Local/Programs/MiKTeX/fonts/type1/pu
-blic/amsfonts/cm/cmmi9.pfb><C:/Users/bearb/AppData/Local/Programs/MiKTeX/fonts/
-type1/public/amsfonts/cm/cmr10.pfb><C:/Users/bearb/AppData/Local/Programs/MiKTe
-X/fonts/type1/public/amsfonts/cm/cmr7.pfb><C:/Users/bearb/AppData/Local/Program
-s/MiKTeX/fonts/type1/public/amsfonts/cm/cmr9.pfb><C:/Users/bearb/AppData/Local/
-Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy10.pfb><C:/Users/bearb/AppDa
-ta/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy7.pfb><C:/Users/bea
-rb/AppData/Local/Programs/MiKTeX/fonts/type1/urw/times/utmb8a.pfb><C:/Users/bea
-rb/AppData/Local/Programs/MiKTeX/fonts/type1/urw/times/utmbi8a.pfb><C:/Users/be
-arb/AppData/Local/Programs/MiKTeX/fonts/type1/urw/times/utmr8a.pfb><C:/Users/be
-arb/AppData/Local/Programs/MiKTeX/fonts/type1/urw/times/utmri8a.pfb>
-Output written on Report.pdf (3 pages, 321873 bytes).
+blic/amsfonts/cm/cmr10.pfb><C:/Users/bearb/AppData/Local/Programs/MiKTeX/fonts/
+type1/public/amsfonts/cm/cmr7.pfb><C:/Users/bearb/AppData/Local/Programs/MiKTeX
+/fonts/type1/public/amsfonts/cm/cmsy10.pfb><C:/Users/bearb/AppData/Local/Progra
+ms/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy7.pfb><C:/Users/bearb/AppData/Loca
+l/Programs/MiKTeX/fonts/type1/urw/times/utmb8a.pfb><C:/Users/bearb/AppData/Loca
+l/Programs/MiKTeX/fonts/type1/urw/times/utmbi8a.pfb><C:/Users/bearb/AppData/Loc
+al/Programs/MiKTeX/fonts/type1/urw/times/utmr8a.pfb><C:/Users/bearb/AppData/Loc
+al/Programs/MiKTeX/fonts/type1/urw/times/utmri8a.pfb>
+Output written on Report.pdf (3 pages, 190511 bytes).
 PDF statistics:
- 83 PDF objects out of 1000 (max. 8388607)
+ 71 PDF objects out of 1000 (max. 8388607)
  0 named destinations out of 1000 (max. 500000)
- 28 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 23 words of extra memory for PDF output out of 10000 (max. 10000000)
 

@@ -59,7 +59,7 @@ A large variety of modulation schemes are used in satellite communications \cite
 \section{Free Space loss}
 Equation \ref{eq:Free_space_equation} is used to model free space loss. Free space loss is the natural loss that occurs between all RF communication links \cite{seybold_introduction_2005} however for Earth to space extra factors need to be considered. On the terrestrial plane $r_s$ is usually just distance between two terrestrial links however slant path needs to be accounted for in space-Earth paths. $r_s$ can be calculated using Equation \ref{eq:Slant_path_equation} and is shown in Figure \ref{fig:Slant_path_illustration}\\
 \begin{equation}
-A_{fs} = \frac{A_r A_t}{\lambda^2 r_s^2}
+A_{fs} = \frac{(4 \pi r_s)^2}{\lambda^2 }
 \label{eq:Free_space_equation}
 \end{equation}
 

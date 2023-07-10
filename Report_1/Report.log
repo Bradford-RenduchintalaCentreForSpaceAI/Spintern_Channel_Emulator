@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.25 (MiKTeX 23.4) (preloaded format=pdflatex 2023.7.5)  10 JUL 2023 11:19
+This is pdfTeX, Version 3.141592653-2.6-1.40.25 (MiKTeX 23.4) (preloaded format=pdflatex 2023.7.5)  10 JUL 2023 15:29
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -701,6 +701,11 @@ LaTeX Warning: Reference `fig:Moduluation_models' on page 1 undefined on input
 line 54.
 
 
+Underfull \hbox (badness 2229) in paragraph at lines 60--61
+[]\OT1/ptm/m/n/10 Equation 1[] is used to model free space loss. Free
+ []
+
+
 Underfull \hbox (badness 10000) in paragraph at lines 60--61
 
  []
@@ -769,23 +774,45 @@ Underfull \hbox (badness 10000) in paragraph at lines 140--142
  []
 
 [2 <./Slant_path.png>]
-Underfull \hbox (badness 2181) in paragraph at lines 147--148
+<Doppler_s_curve.png, id=26, 523.9575pt x 395.22656pt>
+File: Doppler_s_curve.png Graphic file (type png)
+<use Doppler_s_curve.png>
+Package pdftex.def Info: Doppler_s_curve.png  used on input line 147.
+(pdftex.def)             Requested size: 232.19843pt x 175.14856pt.
+
+Underfull \hbox (badness 2181) in paragraph at lines 155--156
 \OT1/ptm/m/n/10 be-comes highly dy-namic thus all pre-vi-ously men-tioned
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 147--148
+Underfull \hbox (badness 10000) in paragraph at lines 155--156
 
  []
 
-(Report.bbl
+<TLE.png, id=27, 830.33617pt x 830.33617pt>
+File: TLE.png Graphic file (type png)
+<use TLE.png>
+Package pdftex.def Info: TLE.png  used on input line 161.
+(pdftex.def)             Requested size: 232.19843pt x 232.18846pt.
+
+LaTeX Warning: `h' float specifier changed to `ht'.
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 166--167
+
+ []
+
+
+Underfull \vbox (badness 2980) has occurred while \output is active []
+
+ (Report.bbl
 ** WARNING: IEEEtran.bst: No hyphenation pattern has been
 ** loaded for the language `en'. Using the pattern for
 ** the default language instead.
 
-Underfull \hbox (badness 1400) in paragraph at lines 31--36
-\OT1/ptm/m/it/8 Prin-ci-ples and Ap-pli-ca-tions, Third Edi-tion\OT1/ptm/m/n/8 
-. Nor-wood,
+Overfull \hbox (3.04533pt too wide) in paragraph at lines 31--36
+\OT1/ptm/m/n/8 http://ebookcentral.proquest.com/lib/bristol/detail.action?docID
+=5430709 
  []
 
 ** WARNING: IEEEtran.bst: No hyphenation pattern has been
@@ -808,6 +835,9 @@ Underfull \hbox (badness 1400) in paragraph at lines 31--36
 ** the default language instead.
 ** WARNING: IEEEtran.bst: No hyphenation pattern has been
 ** loaded for the language `en'. Using the pattern for
+** the default language instead.
+** WARNING: IEEEtran.bst: No hyphenation pattern has been
+** loaded for the language `en-US'. Using the pattern for
 ** the default language instead.
 )
 
@@ -821,21 +851,19 @@ Before submitting the final camera ready copy, remember to:
  uses only Type 1 fonts and that every step in the generation
  process uses the appropriate paper size.
 
-[3
-
-] (Report.aux)
+[3 <./Doppler_s_curve.png> <./TLE.png>] (Report.aux)
 
 LaTeX Warning: There were undefined references.
 
  ) 
 Here is how much of TeX's memory you used:
- 15780 strings out of 476331
- 319926 string characters out of 5787766
+ 15800 strings out of 476331
+ 320251 string characters out of 5787766
  1865660 words of memory out of 5000000
- 35961 multiletter control sequences out of 15000+600000
+ 35979 multiletter control sequences out of 15000+600000
  547046 words of font info for 92 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 84i,8n,80p,989b,316s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 84i,15n,80p,993b,316s stack positions out of 10000i,1000n,20000p,200000b,200000s
 <C:/Users/bearb/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/
 cmmi10.pfb><C:/Users/bearb/AppData/Local/Programs/MiKTeX/fonts/type1/public/ams
 fonts/cm/cmmi7.pfb><C:/Users/bearb/AppData/Local/Programs/MiKTeX/fonts/type1/pu
@@ -843,13 +871,14 @@ blic/amsfonts/cm/cmr10.pfb><C:/Users/bearb/AppData/Local/Programs/MiKTeX/fonts/
 type1/public/amsfonts/cm/cmr7.pfb><C:/Users/bearb/AppData/Local/Programs/MiKTeX
 /fonts/type1/public/amsfonts/cm/cmsy10.pfb><C:/Users/bearb/AppData/Local/Progra
 ms/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy7.pfb><C:/Users/bearb/AppData/Loca
-l/Programs/MiKTeX/fonts/type1/urw/times/utmb8a.pfb><C:/Users/bearb/AppData/Loca
-l/Programs/MiKTeX/fonts/type1/urw/times/utmbi8a.pfb><C:/Users/bearb/AppData/Loc
-al/Programs/MiKTeX/fonts/type1/urw/times/utmr8a.pfb><C:/Users/bearb/AppData/Loc
-al/Programs/MiKTeX/fonts/type1/urw/times/utmri8a.pfb>
-Output written on Report.pdf (3 pages, 190511 bytes).
+l/Programs/MiKTeX/fonts/type1/public/amsfonts/symbols/msam10.pfb><C:/Users/bear
+b/AppData/Local/Programs/MiKTeX/fonts/type1/urw/times/utmb8a.pfb><C:/Users/bear
+b/AppData/Local/Programs/MiKTeX/fonts/type1/urw/times/utmbi8a.pfb><C:/Users/bea
+rb/AppData/Local/Programs/MiKTeX/fonts/type1/urw/times/utmr8a.pfb><C:/Users/bea
+rb/AppData/Local/Programs/MiKTeX/fonts/type1/urw/times/utmri8a.pfb>
+Output written on Report.pdf (3 pages, 1115268 bytes).
 PDF statistics:
- 71 PDF objects out of 1000 (max. 8388607)
+ 80 PDF objects out of 1000 (max. 8388607)
  0 named destinations out of 1000 (max. 500000)
- 23 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 33 words of extra memory for PDF output out of 10000 (max. 10000000)
 

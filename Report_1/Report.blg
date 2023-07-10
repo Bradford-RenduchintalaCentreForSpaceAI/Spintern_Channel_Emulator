@@ -30,45 +30,45 @@ Warning--empty journal in ITU-R_P.372-16
 Warning--empty year in ITU-R_P.372-16
 
 Done.
-You've used 9 entries,
+You've used 11 entries,
             4087 wiz_defined-function locations,
-            864 strings with 8818 characters,
-and the built_in function-call counts, 3391 in all, are:
-= -- 194
-> -- 55
-< -- 8
-+ -- 27
-- -- 10
-* -- 212
-:= -- 528
-add.period$ -- 19
-call.type$ -- 9
-change.case$ -- 7
-chr.to.int$ -- 21
-cite$ -- 24
-duplicate$ -- 299
-empty$ -- 371
-format.name$ -- 13
-if$ -- 744
+            872 strings with 8984 characters,
+and the built_in function-call counts, 4237 in all, are:
+= -- 245
+> -- 76
+< -- 11
++ -- 36
+- -- 14
+* -- 252
+:= -- 656
+add.period$ -- 23
+call.type$ -- 11
+change.case$ -- 9
+chr.to.int$ -- 30
+cite$ -- 26
+duplicate$ -- 372
+empty$ -- 463
+format.name$ -- 18
+if$ -- 940
 int.to.chr$ -- 0
-int.to.str$ -- 9
-missing$ -- 51
-newline$ -- 54
-num.names$ -- 4
-pop$ -- 180
+int.to.str$ -- 11
+missing$ -- 65
+newline$ -- 62
+num.names$ -- 5
+pop$ -- 230
 preamble$ -- 1
 purify$ -- 0
 quote$ -- 2
-skip$ -- 227
+skip$ -- 285
 stack$ -- 0
-substring$ -- 41
-swap$ -- 149
+substring$ -- 49
+swap$ -- 190
 text.length$ -- 1
 text.prefix$ -- 0
 top$ -- 5
-type$ -- 9
+type$ -- 11
 warning$ -- 15
-while$ -- 9
-width$ -- 10
-write$ -- 83
+while$ -- 11
+width$ -- 13
+write$ -- 99
 (There were 15 warnings)

@@ -44,7 +44,7 @@ Using \cite{seybold_introduction_2005} as a basic reference point a basic model 
 
 The Majority of the work will be focused on the Channel Emulator part of the system.\\
 
-The Emulator will primarily focus on the following effects; Free space loss, Atmospheric Effects, Rain Fade, Noise Temperature, multipath fading and scintillation and the effects of orbit. All of these effects have a significant impact on the channel \cite{kaplan_understanding_2017}. Effects like multipath and sun outages are not being considered in this project as they are beyond the scope are highly area and condition dependent. All the effects stated previously are both complex and real impairment. This means that for an electromagnetic wave represented as $Ae^{j w t+\theta}$, the channel will impair the amplitude ($A$), the phase ($\theta$), and the frequency ($w = 2\pi f$), where $f$ is the frequency and $j= \sqrt{-1}$ is the imaginary number. These effects where chosen in accordance with \cite{kaplan_understanding_2017} which details these effects as being prominent in GNSS systems.\\
+The Emulator will primarily focus on the following effects; Free space loss, Atmospheric Effects, Rain Fade, Noise Temperature, multipath fading and scintillation and the effects of orbit. All of these effects have a significant impact on the channel \cite{kaplan_understanding_2017}. Effects like multipath and sun outages are not being considered in this project as they are beyond the scope and are highly area and condition dependent. All the effects stated previously are both complex and real impairment. This means that for an electromagnetic wave represented as $Ae^{j w t+\theta}$, the channel will impair the amplitude ($A$), the phase ($\theta$), and the frequency ($w = 2\pi f$), where $f$ is the frequency and $j= \sqrt{-1}$ is the imaginary number. These effects where chosen in accordance with \cite{kaplan_understanding_2017} which details these effects as being prominent in GNSS systems.\\
 
 These effects are also dependent on time as during the orbital period of the satellite both slant angle \cite{seybold_introduction_2005} and the distance can also change \cite{10.5555/2601574}, these effects will be detailed in section \ref{sec:Orbital}). Effects like ionospheric effects and rain attenuation are also dependent on time and location as well as weather conditions.
 \label{sec:intro}
@@ -57,7 +57,7 @@ A large variety of modulation schemes are used in satellite communications \cite
 
 
 \section{Free Space loss}
-Equation \ref{eq:Free_space_equation} is used to model free space loss. Free space loss is the natural loss that occurs between all RF communication links \cite{seybold_introduction_2005} however for Earth to space extra factors need to be considered. On the terrestrial plane $r_s$ is usually just distance on a terrestrial plane however slant path needs to be accounted for space-Earth paths. $r_s$ can be calculated using Equation \ref{eq:Slant_path_equation} and is shown in Figure \ref{fig:Slant_path_illustration}\\
+Equation \ref{eq:Free_space_equation} is used to model free space loss. Free space loss is the natural loss that occurs between all RF communication links \cite{seybold_introduction_2005} however for Earth to space extra factors need to be considered. On the terrestrial plane $r_s$ is usually just distance between two terrestrial links however slant path needs to be accounted for in space-Earth paths. $r_s$ can be calculated using Equation \ref{eq:Slant_path_equation} and is shown in Figure \ref{fig:Slant_path_illustration}\\
 \begin{equation}
 A_{fs} = \frac{A_r A_t}{\lambda^2 r_s^2}
 \label{eq:Free_space_equation}
@@ -79,7 +79,7 @@ r_s = \frac{h sin(\psi)}{sin(\frac{\pi}{2}+\theta)}
 
 Where $h$ is the height above Earth, $r_e$ is Earth's radius $6378K m$, $\theta$ is the elevation angle and $\psi$ is the central angle determined by equation \ref{eq:Central_angle_equation}.\\
 
-Thus as the satellite changes distance (slant path $r_s$), the free space attenuation changes. Also Doppler effects cause frequency changes and thus wavelength ($\lambda$) changes explained more in \ref{sec:Doppler}.  
+Thus as the satellite changes distance (slant path $r_s$), the free space attenuation changes. Also Doppler effects cause frequency changes and thus wavelength ($\lambda$) changes, this is explained more in \ref{sec:Doppler}.  
 
 \begin{equation}
 \psi = cos^{-1}(\frac{r_e}{h}(sin(\frac{\pi}{2}+\theta))-\theta
@@ -120,7 +120,7 @@ N = kT
 \end{equation}
 Where $N$ is noise, $k$ is Boltzman's constant and $T[K]$ is temperature in Kelvin\\
 
-Temperature can effected by a large array of systems and are detailed further in \cite{ITU-R_P.372-16}. The model I choose to implement is from \cite{ITU-R_P.618-7} and show in equation \ref{eq:Noise_temp_equation}
+Temperature can effected by a large array of systems and are detailed further in \cite{ITU-R_P.372-16}. The model I choose to implement is from \cite{ITU-R_P.618-7} and shown in equation \ref{eq:Noise_temp_equation}
 \begin{equation}
 T_s = T_m(1-10^{-A/10})
 \label{eq:Noise_temp_equation}
@@ -140,13 +140,42 @@ f_{new} =(\frac{v_d+c}{v_s+c})f
 \end{equation}
 Where $f_{new}$ is the perceived frequency of the RF wave, $v_s$ is the speed of RF source, $v_d$ is the speed of receiver, $c$ is the speed of light in the medium and $f$ is the original frequency.\\
 
-This equation is significant as the majority of the effects covered previously depend on the perceived frequency $f_{new}$. It also can cause issues for MFSK mentioned in section \ref{sec:Modulation} as if there is a dramatic frequency shift in the RF signal bits can be perceived wrong when being de-modulated. This effect is extremely prevalent on systems where the speed of the source (satellite) is not constant during the orbital window as this can mean a frequency change during the pass and thus the de-coding system is time dependent thus this aspect of the project is extremely important.
+This equation is significant as the majority of the effects covered previously depend on the perceived frequency $f_{new}$. This effect is extremely prevalent on systems where the speed of the source (satellite) is not constant during the orbital window as this can mean a frequency change during the pass and thus the de-coding system is time dependent thus this aspect of the project is extremely important. This effect causes a "s" curve effect to occur shown in figure \ref{fig:Doppler}.
+
+\begin{figure}[h]
+\centering
+	\includegraphics[width = 0.45\textwidth]{Doppler_s_curve.png}
+	\caption{Actual and approximate Doppler S-curve for different maximum elevation angles from \cite{doppler_effect}}
+	\label{fig:Doppler}
+\end{figure}
+
 \label{sec:Doppler}
 
 \section{Orbital considerations}
 In previous sections particular attention has been paid to slant path $r_s$ this is especially important when considering satellite systems with elliptical orbits as the slant range is not constant for the orbital period. This no doubt changes a large amount of parameters outlines previously and the system becomes highly dynamic thus all previously mentioned sources of channel degradation change significantly during the orbital period of satellite.\\
 
-All this can be calculated using an orbital propagator like SGP4 that takes two line element (TLE) inputs and returns the height of the satellite that can then be used to find the slant height from \ref{eq:Slant_path_equation} and inclination is directly obtained from the TLE.
+All this can be calculated using an orbital propagator like SGP4 that takes two line element (TLE) inputs and returns the height of the satellite that can then be used to find the slant height from \ref{eq:Slant_path_equation} and inclination is directly obtained from the TLE. TLE's are orbital parameters that are transmitted from the satellite periodically and there layout is shown in figure \ref{fig:TLE}.
+
+\begin{figure}[h]
+\centering
+	\includegraphics[width = 0.45\textwidth]{TLE.png}
+	\caption{TLE diagram from \cite{TLE_flat_earth}}
+	\label{fig:TLE}
+\end{figure}
+
+For example a GPS satellite that has a speed of $14000 Km/s$ and transmitting a signal at $1G Hz$ we can calculate the perceived frequency using \ref{eq:Doppler_effect_equation} and $v_d$ is zero as the speed of that station is zero relative to the Earth's reference frame.\\
+
+\begin{equation}
+\centering
+\begin{split}
+f_{new} =& (\frac{v_d+c}{v_s+c}) f\\
+\therefore f_{new} =& (\frac{c}{v_s+c})f\\
+\therefore f_{new} = &(\frac{3\cdot 10^8}{14000 \cdot 3\cdot10^8}) 1\cdot 10^9\\
+\therefore f_{new} =& 0.714\cdot  10^9
+\end{split}
+\label{eq:Doppler_example}
+\end{equation}
+
 \label{sec:Orbital}
 \bibliographystyle{IEEEtran}
 \bibliography{My_Library}

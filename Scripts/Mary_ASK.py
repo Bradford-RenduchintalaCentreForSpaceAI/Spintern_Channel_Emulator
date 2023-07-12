@@ -47,7 +47,7 @@ def Generate_MASK(L,f,int_list,t,levels,fs):
     i1_mapped_filtered = Filters().Low_pass(i1_mapped,2, 25, fs)
     for q in range(0,len(t)):
         s.append((i1_mapped_filtered[q])*np.cos(f*3.14*t[q]*2))
-    
+
     
     return [i1_mapped, s]
 

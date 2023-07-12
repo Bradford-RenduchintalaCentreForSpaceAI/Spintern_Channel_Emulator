@@ -49,27 +49,5 @@ position = sat.get_pos()
 
 
 
-data = []
-import time
-for i in range(0,100):
-    data.append(sat.get_pos())
-    time.sleep(1)
-
-
-import matplotlib.pyplot as plt
-from mpl_toolkits.mplot3d import Axes3D
-
-fig = plt.figure()
-
-
-ax = fig.add_subplot(projection='3d')
-
-
-
-
-
-plt.show()
-
-
 
 

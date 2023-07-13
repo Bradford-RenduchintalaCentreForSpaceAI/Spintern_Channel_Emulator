@@ -39,16 +39,6 @@ I.~Ali, P.~G. Bonanni, N.~Al-Dhahir, and J.~E. Hershey, \emph{Doppler
   Applications in LEO Satellite Communication Systems}, 1st~ed.\hskip 1em plus
   0.5em minus 0.4em\relax Springer Publishing Company, Incorporated, 2013.
 
-\bibitem{smith_modulation_2017}
-\BIBentryALTinterwordspacing
-A.~Smith, M.~Evans, and J.~Downey, ``\BIBforeignlanguage{en}{Modulation
-  classification of satellite communication signals using cumulants and neural
-  networks},'' in \emph{\BIBforeignlanguage{en}{2017 {Cognitive}
-  {Communications} for {Aerospace} {Applications} {Workshop} ({CCAA})}}.\hskip
-  1em plus 0.5em minus 0.4em\relax Cleveland, OH, USA: IEEE, Jun. 2017, pp.
-  1--8. [Online]. Available: \url{http://ieeexplore.ieee.org/document/8001878/}
-\BIBentrySTDinterwordspacing
-
 \bibitem{ITU-R_P.676-5}
 ``\BIBforeignlanguage{en}{{RECOMMENDATION} {ITU}-{R} {P}.676-5 - {Attenuation}
   by atmospheric gases}.''

@@ -26,7 +26,6 @@ def Int_generator(bits,Levels):
 
 def MPSK_Generator(bits,t,L,f):
     theta = [(2*np.pi*n)/(2**L) for n in range(0,2**L)]
-    print(theta)
 
     t_per_bit = int(len(t)/len(bits))
     i1_mapped= []
@@ -40,7 +39,7 @@ def MPSK_Generator(bits,t,L,f):
             i1_mapped.append(i1_mapped[len(i1_mapped)-1])
     s = []      
     for i in range(len(t)):
-        s.append(np.exp(-1j*2*np.pi*t[i]*f+1j*theta[i1_mapped[i]]))
+        s.append(np.exp(-1j*np.pi*t[i]*f+1j*theta[i1_mapped[i]]))
         #print(theta[i1_mapped[i]])
             
     
@@ -55,7 +54,7 @@ def test():
 
     f = 2
 
-    levels = 2
+    levels = 1
 
     step = 1/(4*(f*2*3.14*(2**levels)))
 
@@ -74,7 +73,7 @@ def test():
     
 
     
-    c = np.exp(-1j*2*np.pi*t*f)
+    c = np.exp(-1j*np.pi*t*f)
     
     [real_part, phase_part] = Constallation_phase(c, s)
     
@@ -94,6 +93,8 @@ def test():
     sub2.set_ylim(0,10000)
     sub3.scatter(np.real(s),np.arctan(np.imag(s)/np.real(s)))
     sub4.scatter(real_part,phase_part)
+    sub4.axhline(0, color = 'black', linewidth = 0.5)
+    sub4.axvline(0, color = 'black', linewidth = 0.5)
     sub3.grid(True)
     sub4.grid(True)
     sub4.set_xlim((-4,4))

@@ -1,34 +1,56 @@
+
 import matplotlib.pyplot as plt
-import random 
 import numpy as np
-N = 10000
-L = N/8
-step = 0.01
-wt = (1*10^9)*np.pi
-graph_scaling_factor = 5
-
-t = np.arange(0, N, step)
-b1 = random.choices([0,1], weights = (50,50), k = int(L)) 
+import random
 
 
-
-c = np.sin(t*wt)
-cnt = 0
-b1_mapped = []
-for q in range(0,int(L)):
-    for i in range(0,int((N/L)/step)):
-        b1_mapped.append(b1[q])
-
-
-s = []
-for i in range(0,len(t)):
-    s.append(b1_mapped[i]*c[i])
+ 
+def Constallation_phase(carrier,signal):
     
 
 
-fig1, (sub1, sub2) = plt.subplots(1, 2, figsize=(10, 10))
-sub1.plot([t[i] for i in range(1,int(N/graph_scaling_factor))],[b1_mapped[i] for i in range(1,int(N/graph_scaling_factor))])
-sub1.plot([t[i] for i in range(1,int(N/graph_scaling_factor))],[s[i] for i in range(1,int(N/graph_scaling_factor))], linestyle = 'dashed')
-sub2.plot(t, s)
-plt.show()
+    real_part = np.sqrt(np.real(signal)**2+np.imag(signal)**2)
 
+    phase_part = np.arctan(np.imag(signal)/np.real(signal)) - np.arctan(np.imag(carrier)/np.real(carrier))
+
+
+    for i in range(len(phase_part)):
+        if phase_part[i] < 0:
+           phase_part[i] = np.pi-np.abs(phase_part[i])
+    
+    return [real_part,phase_part]           
+           
+     
+           
+     
+        
+     
+def test():
+    
+    pi = np.pi
+    phase = pi/2
+    t = np.arange(0,2*pi,0.01 )
+    s = np.cos(2*pi*t+phase)
+    
+    c = np.exp(-1j*2*pi*t)
+    
+    s1 = np.exp(-1j*2*pi*t-1j*phase)  
+    [real_part,phase_part] = Constallation_phase(c, s1)
+    fig = plt.figure()
+    
+    
+    plt.scatter(real_part,phase_part)
+    
+    plt.xlim((-4,4))
+    
+    plt.ylim((-4,4))
+    
+    plt.grid(True)
+    plt.show()
+    
+    print(phase_part)
+    
+    
+    
+if __name__ == '__main__':
+    test()

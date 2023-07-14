@@ -113,14 +113,66 @@ class TLE_calc():
         
         delta = np.arcsin(np.sin(i)*np.sin(omega+v))
         return delta
+
+
+    def GMST(self):
+        import numpy as np
+        import juliandate as jd
         
+        jdq= jd.from_gregorian(self.year_now, self.month_now, self.day_now,self.hr_now,self.minute_now,self.sec_now)
+        print(self.jd)
+        
+        
+        print(self.year_now, self.month_now, self.day_now,self.hr_now,self.minute_now,self.sec_now)
+        
+        
+        
+        
+        
+        
+        
+        T = (jdq-2451545.0)/36525
+        print(T)
+        GMST_angle = (280.46061837)+(360.98564736629*(jdq-2452445.0))+(0.000387933*(T**2))-((T**3)/38710000)
+
+        return GMST_angle*180/np.pi
+
+
     
-    def test(self, accuarcy):
-        print(self.sat.mo)
+    def get_lat_long(self,accuarcy):
+        import numpy as np
+        
+        GMST = self.GMST()
 
+        x,y,z = self.get_pos()        
+        
+        
+        x_bar = x*np.cos(GMST)+y*np.sin(GMST)
+        y_bar = -x*np.sin(GMST)+y*np.cos(GMST)
+        z_bar = z
+        
 
-Iss_line_1 = '1 25544U 98067A   23195.46614675  .00010182  00000-0  18788-3 0  9996'
-Iss_line_2 = '2 25544  51.6412 193.3466 0000287  80.3851 355.9960 15.49731575406021'
+        #print(np.sqrt(x**2+y**2+z**2)-6378.1)
+        #print(np.sqrt(x_bar**2+y**2+z**2)-6378.1)
+        
+        
+
+        
+        long = y_bar/x_bar
+        
+        long = np.arctan(long)
+        lat = np.arctan(z_bar/np.sqrt((x_bar**2)+(y_bar**2)))   
+        
+        return long, lat
+        
+
+        
+        
+
+        
+
+Iss_line_1 = '1 25544U 98067A   23195.52667919  .00010762  00000-0  19809-3 0  9991'
+Iss_line_2 = '2 25544  51.6409 193.0478 0000267  67.7123 346.6082 15.49734931406038'
 
 line_1 = '1 56226U 23084BK  23191.10910518  .00005567  00000+0  30866-3 0  9997'
 line_2 = '2 56226  97.5132 307.3349 0012453 121.1638 239.0816 15.14117734  4126'
@@ -128,7 +180,7 @@ line_2 = '2 56226  97.5132 307.3349 0012453 121.1638 239.0816 15.14117734  4126'
 
 sat = TLE_calc(Iss_line_1,Iss_line_2)
 
-acc = 10000
+acc = 1000
 position = sat.get_pos()
 
 v = sat.get_true_anom(acc)
@@ -137,11 +189,8 @@ alpha = sat.get_ascension(acc)
 
 delta = sat.get_declanation(acc)
 
+long,lat = sat.get_lat_long(acc)
 
-
-
-print(alpha,delta*180/3.141)
-    
-
+print(lat*180/3.141,long*180/3.141)
 
 

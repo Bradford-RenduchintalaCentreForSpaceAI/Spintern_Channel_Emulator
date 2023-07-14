@@ -50,9 +50,9 @@ def test():
     
     plt.figure(figsize = (10, 10))
     plt.title("BPSK Constelation diagram")
-    plt.scatter(real_part,phase_part);
-    plt.axhline(0, color = "black", linewidth = 0.5)
-    plt.axvline(0, color = "black", linewidth = 0.5)
+    plt.scatter(phase_part,real_part);
+    plt.axhline(0, color = "black", linewidth = 1)
+    plt.axvline(0, color = "black", linewidth = 1)
     plt.xlim((-4,4))
     plt.xlabel("Real")
     plt.ylabel("Phase")

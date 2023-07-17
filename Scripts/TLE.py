@@ -24,7 +24,7 @@ class TLE_calc():
         -------
         """
         from datetime import datetime, timezone
-        import sgp4
+        from sgp4 import api
         self.TLE_line_1 = TLE_line_1
         self.TLE_line_2 = TLE_line_2
         #Get relevent time
@@ -35,9 +35,9 @@ class TLE_calc():
         self.minute_now = datetime.now().minute
         self.sec_now = datetime.now().second
         self.milli_now = datetime.now().microsecond
-        self.jd, self.fr = sgp4.api.jday(self.year_now, self.month_now, self.day_now, self.hr_now,
+        self.jd, self.fr = api.jday(self.year_now, self.month_now, self.day_now, self.hr_now,
                                          self.minute_now, self.sec_now)
-        self.sat = sgp4.api.Satrec.twoline2rv(self.TLE_line_1,self.TLE_line_2)
+        self.sat = api.Satrec.twoline2rv(self.TLE_line_1,self.TLE_line_2)
         
     def get_speed(self):
         """
@@ -376,7 +376,8 @@ def test():
     height = sat.get_height()
     d,Az, theta = sat.get_slant_range(acc, 51.4545, -2.587910) # Ground station at the location of Bristol UK
     
-    print(f"ISS Data\nLattitude:{lat}, Longitude:{long}\nPos(xyz):{x, y, z}\nSlant length: {d}, Azmuth:{Az}\nElevation angle:{theta}")
+    GMST = sat.GMST()
+    print(f"ISS Data\nLattitude:{lat}, Longitude:{(alpha-GMST)*180/3.141}\nPos(xyz):{x, y, z}\nSlant length: {d}, Azmuth:{Az}\nElevation angle:{theta}")
     print(f"Acension:{alpha}, Decension:{delta}, Height: {height}")    
     
     

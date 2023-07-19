@@ -22,7 +22,7 @@ class TLE_calc():
     
     All data has been tested with current ISS data as shown in test() was 4° off annoyingly 
     """
-    def __init__(self,TLE_line_1,TLE_line_2):
+    def __init__(self,TLE_line_1,TLE_line_2, use_time = False,year = None,month = None,day = None,hour = None,minute = None,sec = None,milli = None):
         """
         Parameters
         ----------
@@ -34,21 +34,39 @@ class TLE_calc():
         Returns NONE
         -------
         """
+        from sgp4.earth_gravity import wgs72
         from datetime import datetime, timezone
         from sgp4 import api
+        from sgp4.io import twoline2rv as io2l
         self.TLE_line_1 = TLE_line_1
         self.TLE_line_2 = TLE_line_2
-        #Get relevent time
-        self.year_now = datetime.now(timezone.utc).year
-        self.month_now = datetime.now(timezone.utc).month
-        self.day_now = datetime.now(timezone.utc).day
-        self.hr_now = datetime.now(timezone.utc).hour
-        self.minute_now = datetime.now(timezone.utc).minute
-        self.sec_now = datetime.now(timezone.utc).second
-        self.milli_now = datetime.now(timezone.utc).microsecond
-        self.jd, self.fr = api.jday(self.year_now, self.month_now, self.day_now, self.hr_now,
-                                         self.minute_now, self.sec_now)
-        self.sat = api.Satrec.twoline2rv(self.TLE_line_1,self.TLE_line_2)
+        if use_time == True:
+            # Use given time
+            self.year_now = self.year
+            self.month_now = self.month
+            self.day_now = self.day
+            self.hr_now = self.hour
+            self.minute_now = self.minute
+            self.sec_now = self.second
+            self.milli_now = self.milli
+            self.jd, self.fr = api.jday(self.year_now, self.month_now, self.day_now, self.hr_now,
+                                                 self.minute_now, self.sec_now)
+        
+        
+        else:
+            #Get Time now
+            self.year_now = datetime.now(timezone.utc).year
+            self.month_now = datetime.now(timezone.utc).month
+            self.day_now = datetime.now(timezone.utc).day
+            self.hr_now = datetime.now(timezone.utc).hour
+            self.minute_now = datetime.now(timezone.utc).minute
+            self.sec_now = datetime.now(timezone.utc).second
+            self.milli_now = datetime.now(timezone.utc).microsecond
+            self.jd, self.fr = api.jday(self.year_now, self.month_now, self.day_now, self.hr_now,
+                                             self.minute_now, self.sec_now)
+            self.sat = api.Satrec.twoline2rv(self.TLE_line_1,self.TLE_line_2)
+        
+        assert io2l(self.TLE_line_1, self.TLE_line_2,wgs72)
         
     def get_speed(self):
         """
@@ -81,7 +99,7 @@ class TLE_calc():
         e, r, v = self.sat.sgp4(self.jd,self.fr)
         if e != 0:
             print(SGP4_ERRORS[e])
-        return r
+        return {"x":r[0],"y":r[1],"z":r[2]}
     
     def get_m_true(self):
         """
@@ -240,8 +258,9 @@ class TLE_calc():
         
         return np.remainder(np.deg2rad(temp)/240,2*np.pi)
 
-    def get_lat_long(self,accuarcy):
+    def get_pos_ECEF(self,accuarcy):
         """
+
 
         Parameters
         ----------
@@ -250,38 +269,43 @@ class TLE_calc():
 
         Returns
         -------
-        float
-            longitude of sattelite in rads.
-        float
-            lattitude of sattelite in rads.
+        dict
+            Positiion dictionary describing positi.
 
         """
         import numpy as np
         GMST = self.GMST()
 
-        x,y,z = self.get_pos_TEME() #Get pos       
+        pos = self.get_pos_TEME()
+        
+        
+        
+       
         
         #Transforms position into the ECF frame
-        x_bar = x*np.cos(GMST)+y*np.sin(GMST) 
-        y_bar = -x*np.sin(GMST)+y*np.cos(GMST) 
-        z_bar = z
+        x_bar = pos["x"]*np.cos(GMST)+pos["y"]*np.sin(GMST) 
+        y_bar = -pos["x"]*np.sin(GMST)+pos["y"]*np.cos(GMST) 
+        z_bar = pos["z"]
         
-        return np.arctan(z_bar/np.sqrt(x_bar**2+y_bar**2)), np.arctan2(y_bar,x_bar)
+        long = np.arctan2(y_bar,x_bar)
+        
+        lat = np.arctan(z_bar/np.sqrt(x_bar**2+y_bar**2))
+        return {"x":x_bar,"y":y_bar,"z":z_bar,"long":long,"lat":lat}
     
-    def get_height(self):
+    def get_height(self,accuarcy):
         """
         
 
         Returns
-        -------
+        
         float
             Gives the height of sattelite in km.
 
         """
         import numpy as np
-        x,y,z = self.get_pos_TEME() #get position
+        pos = self.get_pos_ECEF(accuarcy) #get position
         
-        return np.sqrt((x*x)+(y*y)+(z*z))-6378.1 #Just computes sqrt(x^2+y^2+z^2)-earth raduis
+        return np.sqrt((pos["x"]**2)+(pos["y"]**2)+(pos["z"]**2))-6378.1 #Just computes sqrt(x^2+y^2+z^2)-earth raduis
 
     def get_slant_range(self, accuarcy,lat_of_ground,long_of_ground):
         """
@@ -315,15 +339,13 @@ class TLE_calc():
 
         delta = self.get_declanation(accuarcy)
 
-        r = self.get_height()+6378.1 #Get height of sattelite above earth 
+        r = self.get_height(accuarcy)+6378.1 #Get height of sattelite above earth 
         
         R_e = 6378.1 #raduis of earth
         
         #Get long and lat of sattellite and convert to radians
-        long_of_sat, lat_of_sat = self.get_lat_long(accuarcy)
-        lat_of_sat = lat_of_sat*pi/180 
-        long_of_sat = long_of_sat*pi/180
-        
+        pos = self.get_pos_ECEF(accuarcy)
+        lat_of_sat = pos["lat"]
         #Algorithm in the book
         
         H = -(lat_of_sat-lat_of_ground)
@@ -344,6 +366,21 @@ class TLE_calc():
         
         
         return d, Az, theta
+    def get_pass(self,accuarcy):
+        import numpy as np
+        
+        pos = self.get_pos_ECEF(accuarcy)
+        lat_of_sat = pos["lat"]
+        long_of_sat = pos["long"]
+        n = self.sat.no_kozai
+        T = (2*np.pi)/n
+        
+        print(T)
+        
+       
+        
+        
+        
     
 
 
@@ -356,38 +393,39 @@ def test():
     """
     import urllib.request
     import numpy as np
-    try:
-        f = urllib.request.urlopen('https://live.ariss.org/iss.txt') #Gather TLE data
-        url_text = f.read(200).decode('utf-8')
-        url_text.split(" ")
-        line_1_2 = url_text[13:] # Format the data to get both line 1 and 2 of TLE data 
-        line_1 = line_1_2[0:71]
-        line_2 = line_1_2[71:]
-    except:
-        line_1 = "1 25544U 98067A   23200.04569411  .00013707  00000-0  24898-3 0  9999"
-        line_2 = '2 25544  51.6408 170.6667 0000390  75.0699   8.6204 15.49853169406738'
-    sat = TLE_calc(line_1,line_2) # Initiate a sattellite using the TLE data provided 
+    # try:
+    #     f = urllib.request.urlopen('https://live.ariss.org/iss.txt') #Gather TLE data
+    #     url_text = f.read(200).decode('utf-8')
+    #     url_text.split(" ")
+    #     line_1_2 = url_text[13:] # Format the data to get both line 1 and 2 of TLE data 
+    #     line_1 = line_1_2[0:71]
+    #     line_2 = line_1_2[71:]
+    # except:    
+    line_1 = "1 25544U 98067A   23200.04569411  .00013707  00000-0  24898-3 0  9999"
+    line_2 = '2 25544  51.6408 170.6667 0000390  75.0699   8.6204 15.49853169406738'
+    sat = TLE_calc(line_1,line_2,False) # Initiate a sattellite using the TLE data provided 
     
-    acc = 1000 # Set accuracy of computation to 100 see class TLE
+    acc = 10000 # Set accuracy of computation to 100 see class TLE
 
     alpha = sat.get_ascension(acc) # Gather relevent data 
     delta = np.rad2deg(sat.get_declanation(acc))
-    lat,long = sat.get_lat_long(acc)
-    x,y,z = sat.get_pos_TEME()
+    pos = sat.get_pos_ECEF(acc)
     x1,y1,z1 = sat.get_speed()["velocity"]
-    height = sat.get_height()
+    height = sat.get_height(acc)
     d,Az, theta = sat.get_slant_range(acc, 51.0643, 0.8598) # Ground station at the location of Ham street Ashford Kent
     
-    print(f"""
-          ISS Data
-          Lattitude:{np.rad2deg(lat)}, Longitude:{np.rad2deg(long)}
-          Pos in TEME(xyz): {x, y, z}
-          Slant length: {d}
-          Azmuth: {Az} 
-          Elevation angle: {np.rad2deg(theta)}
-          Height: {height}
-          """)
-   
+    # print(f"""
+    #       Lattitude:{np.rad2deg(pos["lat"])}, Longitude:{np.rad2deg(pos["long"])}
+    #       Pos in ECEF (xyz): {pos["x"], pos["y"], pos["z"]}
+    #       Slant length: {d}
+    #       Azmuth: {np.rad2deg(Az)} 
+    #       Elevation angle: {np.rad2deg(theta)}
+    #       Height: {height}
+    #       """)
+    
+    period = sat.get_pass(acc)
+
+
 
     
     

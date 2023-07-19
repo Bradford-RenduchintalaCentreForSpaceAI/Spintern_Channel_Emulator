@@ -66,9 +66,9 @@ class TLE_calc():
         
         speed = np.linalg.norm(v) #is just sqrt(x^2+y^2+z^2)
         
-        return speed, v
+        return {"speed":speed, "velocity":v}
     
-    def get_pos(self):
+    def get_pos_TEME(self):
         from sgp4.api import SGP4_ERRORS
         """
 
@@ -229,18 +229,16 @@ class TLE_calc():
                                ,self.hr_now,self.minute_now,self.sec_now,self.milli_now)
         
         jdq = self.jd+self.fr
-        #   jdq = 23199
-        theta = 0.7790572732640+(0.00273781191135448*(jdq-2451545.0)) #Find earth rotation angle
-        
+    
         #finds centuries since j2000
         t = (jdq-2451545.0)/36525
         
         #finally calcs GMST
-        GMST = ((np.pi*2*theta)+(0.014506+(4612.15739966*t)+(1.39667721*t**2)-(0.00009344*t**3)+(0.00001882*t**4)))
-
         
-        GMST = GMST*np.pi/180
-        return GMST
+        temp = - 6.2e-6 * t * t * t + 0.093104 * t * t  + (876600.0 * 3600.0 + 8640184.812866) * t + 67310.54841
+               
+        
+        return np.remainder(np.deg2rad(temp)/240,2*np.pi)
 
     def get_lat_long(self,accuarcy):
         """
@@ -253,29 +251,22 @@ class TLE_calc():
         Returns
         -------
         float
-            longitude of sattelite in degrees.
+            longitude of sattelite in rads.
         float
-            lattitude of sattelite in degrees.
+            lattitude of sattelite in rads.
 
         """
         import numpy as np
         GMST = self.GMST()
 
-        x,y,z = self.get_pos() #Get pos       
+        x,y,z = self.get_pos_TEME() #Get pos       
         
         #Transforms position into the ECF frame
         x_bar = x*np.cos(GMST)+y*np.sin(GMST) 
         y_bar = -x*np.sin(GMST)+y*np.cos(GMST) 
         z_bar = z
         
-        #print(np.sqrt(x_bar**2+y_bar**2+z_bar**2)-6378.1)
-        
-        
-        long = np.arctan(y_bar/x_bar)
-        lat = np.arctan(z_bar/np.sqrt((x_bar**2)+(y_bar**2)))   
-        
-        return np.rad2deg(long), np.rad2deg(lat)
-        
+        return np.arctan(z_bar/np.sqrt(x_bar**2+y_bar**2)), np.arctan2(y_bar,x_bar)
     
     def get_height(self):
         """
@@ -288,7 +279,7 @@ class TLE_calc():
 
         """
         import numpy as np
-        x,y,z = self.get_pos() #get position
+        x,y,z = self.get_pos_TEME() #get position
         
         return np.sqrt((x*x)+(y*y)+(z*z))-6378.1 #Just computes sqrt(x^2+y^2+z^2)-earth raduis
 
@@ -354,19 +345,8 @@ class TLE_calc():
         
         return d, Az, theta
     
-    
-    def test(self):
-        from astropy.coordinates import TEME, CartesianDifferential, CartesianRepresentation
-        from astropy import units as u
-        from astropy.coordinates import ITRS
-        from astropy.time import Time
-        t = Time(self.jd+self.fr, format='jd')
-        teme_p = CartesianRepresentation(self.get_pos()*u.km)
-        teme_v = CartesianDifferential(self.get_speed()[1]*u.km/u.s)
-        teme = TEME(teme_p.with_differentials(teme_v), obstime=t)
-        itrs_geo = teme.transform_to(ITRS(obstime=t))
-        location = itrs_geo.earth_location
-        print(location.geodetic)
+
+
         
 
 def test():
@@ -392,18 +372,23 @@ def test():
 
     alpha = sat.get_ascension(acc) # Gather relevent data 
     delta = np.rad2deg(sat.get_declanation(acc))
-    long,lat = sat.get_lat_long(acc)
-    x,y,z = sat.get_pos()
-    x1,y1,z1 = sat.get_speed()[1]
+    lat,long = sat.get_lat_long(acc)
+    x,y,z = sat.get_pos_TEME()
+    x1,y1,z1 = sat.get_speed()["velocity"]
     height = sat.get_height()
-    d,Az, theta = sat.get_slant_range(acc, 51.4545, -2.587910) # Ground station at the location of Bristol UK
+    d,Az, theta = sat.get_slant_range(acc, 51.0643, 0.8598) # Ground station at the location of Ham street Ashford Kent
     
-    GMST = sat.GMST()
-    # print(f"ISS Data\nLattitude:{lat}, Longitude:{long}\nPos(xyz):{x, y, z}\nSlant length: {d}, Azmuth:{Az}\nElevation angle:{np.rad2deg(theta)}")
-    # print(f"Acension:{alpha}, Decension:{delta}")    
-    print(long,',',lat)
-    
-    sat.test()
+    print(f"""
+          ISS Data
+          Lattitude:{np.rad2deg(lat)}, Longitude:{np.rad2deg(long)}
+          Pos in TEME(xyz): {x, y, z}
+          Slant length: {d}
+          Azmuth: {Az} 
+          Elevation angle: {np.rad2deg(theta)}
+          Height: {height}
+          """)
+   
+
     
     
         

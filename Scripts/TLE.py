@@ -9,6 +9,17 @@ class TLE_calc():
     
     It uses sgp4 to compute a lot of varibles and returns them ti relevent data 
     
+        algorithms based on Chapter 1 of 
+        %0 Book
+        %T Doppler Applications in LEO Satellite Communication Systems
+        %@ 1475783906
+        %I Springer Publishing Company, Incorporated
+        %A Irfan Ali
+        %A Pierino G. Bonanni
+        %A Naofal Al-Dhahir
+        %A John E. Hershey
+        %D 2013
+    
     All data has been tested with current ISS data as shown in test() was 4° off annoyingly 
     """
     def __init__(self,TLE_line_1,TLE_line_2):
@@ -28,13 +39,13 @@ class TLE_calc():
         self.TLE_line_1 = TLE_line_1
         self.TLE_line_2 = TLE_line_2
         #Get relevent time
-        self.year_now = datetime.now().year
-        self.month_now = datetime.now().month
-        self.day_now = datetime.now().day
+        self.year_now = datetime.now(timezone.utc).year
+        self.month_now = datetime.now(timezone.utc).month
+        self.day_now = datetime.now(timezone.utc).day
         self.hr_now = datetime.now(timezone.utc).hour
-        self.minute_now = datetime.now().minute
-        self.sec_now = datetime.now().second
-        self.milli_now = datetime.now().microsecond
+        self.minute_now = datetime.now(timezone.utc).minute
+        self.sec_now = datetime.now(timezone.utc).second
+        self.milli_now = datetime.now(timezone.utc).microsecond
         self.jd, self.fr = api.jday(self.year_now, self.month_now, self.day_now, self.hr_now,
                                          self.minute_now, self.sec_now)
         self.sat = api.Satrec.twoline2rv(self.TLE_line_1,self.TLE_line_2)
@@ -55,9 +66,10 @@ class TLE_calc():
         
         speed = np.linalg.norm(v) #is just sqrt(x^2+y^2+z^2)
         
-        return speed
+        return speed, v
     
     def get_pos(self):
+        from sgp4.api import SGP4_ERRORS
         """
 
         Returns
@@ -67,6 +79,8 @@ class TLE_calc():
             Mean Equinox coordinate frame.
         """
         e, r, v = self.sat.sgp4(self.jd,self.fr)
+        if e != 0:
+            print(SGP4_ERRORS[e])
         return r
     
     def get_m_true(self):
@@ -133,16 +147,6 @@ class TLE_calc():
         v : float
             true anomaly.
 
-        algorithm based on Chapter 1 of 
-        %0 Book
-        %T Doppler Applications in LEO Satellite Communication Systems
-        %@ 1475783906
-        %I Springer Publishing Company, Incorporated
-        %A Irfan Ali
-        %A Pierino G. Bonanni
-        %A Naofal Al-Dhahir
-        %A John E. Hershey
-        %D 2013
         """
         from scipy.special import jv as bassel_1st
         import numpy as np
@@ -225,16 +229,15 @@ class TLE_calc():
                                ,self.hr_now,self.minute_now,self.sec_now,self.milli_now)
         
         jdq = self.jd+self.fr
+        #   jdq = 23199
         theta = 0.7790572732640+(0.00273781191135448*(jdq-2451545.0)) #Find earth rotation angle
         
         #finds centuries since j2000
         t = (jdq-2451545.0)/36525
         
         #finally calcs GMST
-        GMST = ((np.pi*2*theta)+(0.014506+ 4612.15739966*t+1.39667721*t**2-0.00009344*t**3 + 0.00001882*t**4))
-        
-        GMST = GMST/60
-        GMST = GMST/60
+        GMST = ((np.pi*2*theta)+(0.014506+(4612.15739966*t)+(1.39667721*t**2)-(0.00009344*t**3)+(0.00001882*t**4)))
+
         
         GMST = GMST*np.pi/180
         return GMST
@@ -265,13 +268,13 @@ class TLE_calc():
         y_bar = -x*np.sin(GMST)+y*np.cos(GMST) 
         z_bar = z
         
-        print(np.sqrt(x_bar**2+y_bar**2+z_bar**2)-6378.1)
+        #print(np.sqrt(x_bar**2+y_bar**2+z_bar**2)-6378.1)
         
-
+        
         long = np.arctan(y_bar/x_bar)
         lat = np.arctan(z_bar/np.sqrt((x_bar**2)+(y_bar**2)))   
         
-        return long*180/np.pi, lat*180/np.pi
+        return np.rad2deg(long), np.rad2deg(lat)
         
     
     def get_height(self):
@@ -350,35 +353,57 @@ class TLE_calc():
         
         
         return d, Az, theta
+    
+    
+    def test(self):
+        from astropy.coordinates import TEME, CartesianDifferential, CartesianRepresentation
+        from astropy import units as u
+        from astropy.coordinates import ITRS
+        from astropy.time import Time
+        t = Time(self.jd+self.fr, format='jd')
+        teme_p = CartesianRepresentation(self.get_pos()*u.km)
+        teme_v = CartesianDifferential(self.get_speed()[1]*u.km/u.s)
+        teme = TEME(teme_p.with_differentials(teme_v), obstime=t)
+        itrs_geo = teme.transform_to(ITRS(obstime=t))
+        location = itrs_geo.earth_location
+        print(location.geodetic)
         
+
 def test():
     """
     Test file for TLE data that takes most current TLE data for ISS from https://live.ariss.org/tle/ 
     and return relevent parameters
     """
     import urllib.request
-    
-    f = urllib.request.urlopen('https://live.ariss.org/iss.txt') #Gather TLE data
-    url_text = f.read(200).decode('utf-8')
-    url_text.split(" ")
-    line_1_2 = url_text[13:] # Format the data to get both line 1 and 2 of TLE data 
-    line_1 = line_1_2[0:71]
-    line_2 = line_1_2[71:]
-    
+    import numpy as np
+    try:
+        f = urllib.request.urlopen('https://live.ariss.org/iss.txt') #Gather TLE data
+        url_text = f.read(200).decode('utf-8')
+        url_text.split(" ")
+        line_1_2 = url_text[13:] # Format the data to get both line 1 and 2 of TLE data 
+        line_1 = line_1_2[0:71]
+        line_2 = line_1_2[71:]
+    except:
+        line_1 = "1 25544U 98067A   23200.04569411  .00013707  00000-0  24898-3 0  9999"
+        line_2 = '2 25544  51.6408 170.6667 0000390  75.0699   8.6204 15.49853169406738'
     sat = TLE_calc(line_1,line_2) # Initiate a sattellite using the TLE data provided 
     
     acc = 1000 # Set accuracy of computation to 100 see class TLE
 
     alpha = sat.get_ascension(acc) # Gather relevent data 
-    delta = sat.get_declanation(acc)
+    delta = np.rad2deg(sat.get_declanation(acc))
     long,lat = sat.get_lat_long(acc)
     x,y,z = sat.get_pos()
+    x1,y1,z1 = sat.get_speed()[1]
     height = sat.get_height()
     d,Az, theta = sat.get_slant_range(acc, 51.4545, -2.587910) # Ground station at the location of Bristol UK
     
     GMST = sat.GMST()
-    print(f"ISS Data\nLattitude:{lat}, Longitude:{(alpha-GMST)*180/3.141}\nPos(xyz):{x, y, z}\nSlant length: {d}, Azmuth:{Az}\nElevation angle:{theta}")
-    print(f"Acension:{alpha}, Decension:{delta}, Height: {height}")    
+    # print(f"ISS Data\nLattitude:{lat}, Longitude:{long}\nPos(xyz):{x, y, z}\nSlant length: {d}, Azmuth:{Az}\nElevation angle:{np.rad2deg(theta)}")
+    # print(f"Acension:{alpha}, Decension:{delta}")    
+    print(long,',',lat)
+    
+    sat.test()
     
     
         
@@ -386,6 +411,5 @@ if __name__ == "__main__":
     test()
         
         
-        
-        
+ 
 

@@ -12,9 +12,9 @@ def Constallation_phase(carrier,signal):
     
     
     
-    term_1 = np.arctan(np.imag(signal)/np.real(signal))
+    term_1 = np.arctan2(np.imag(signal),np.real(signal))
     
-    term_2 = np.arctan(np.imag(carrier)/np.real(carrier))
+    term_2 = np.arctan2(np.imag(carrier),np.real(carrier))
     
     print(term_2-term_1)
     

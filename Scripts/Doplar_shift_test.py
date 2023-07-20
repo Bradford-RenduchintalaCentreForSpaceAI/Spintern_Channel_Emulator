@@ -1,12 +1,3 @@
-
-
-
-
-
-
-
-
-
 def test():
     from TLE import TLE_calc
     import numpy as np

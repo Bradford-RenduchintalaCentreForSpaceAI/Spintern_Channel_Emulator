@@ -1,6 +1,3 @@
-
-
-
 class TLE_calc():
     """
     TLE propergator that gathers data from given TLE values to begin intiate a sattelite using TLE_calc(line_1,line_2)

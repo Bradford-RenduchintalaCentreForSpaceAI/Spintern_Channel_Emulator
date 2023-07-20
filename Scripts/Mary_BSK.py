@@ -54,7 +54,7 @@ def test():
 
     f = 2
 
-    levels = 1
+    levels = 2
 
     step = 1/(4*(f*2*3.14*(2**levels)))
 

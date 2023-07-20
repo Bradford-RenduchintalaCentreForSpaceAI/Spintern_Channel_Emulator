@@ -39,15 +39,16 @@ class TLE_calc():
         self.TLE_line_2 = TLE_line_2
         if use_time == True:
             # Use given time
-            self.year_now = self.year
-            self.month_now = self.month
-            self.day_now = self.day
-            self.hr_now = self.hour
-            self.minute_now = self.minute
-            self.sec_now = self.second
-            self.milli_now = self.milli
+            self.year_now = year
+            self.month_now = month
+            self.day_now = day
+            self.hr_now = hour
+            self.minute_now = minute
+            self.sec_now = sec
+            self.milli_now = milli
             self.jd, self.fr = api.jday(self.year_now, self.month_now, self.day_now, self.hr_now,
                                                  self.minute_now, self.sec_now)
+            
         
         
         else:
@@ -61,11 +62,11 @@ class TLE_calc():
             self.milli_now = datetime.now(timezone.utc).microsecond
             self.jd, self.fr = api.jday(self.year_now, self.month_now, self.day_now, self.hr_now,
                                              self.minute_now, self.sec_now)
-            self.sat = api.Satrec.twoline2rv(self.TLE_line_1,self.TLE_line_2)
+        self.sat = api.Satrec.twoline2rv(self.TLE_line_1,self.TLE_line_2)
         
         assert io2l(self.TLE_line_1, self.TLE_line_2,wgs72)
         
-    def get_speed(self):
+    def get_vel_ECI(self):
         """
         Returns
         -------
@@ -83,7 +84,7 @@ class TLE_calc():
         
         return {"speed":speed, "velocity":v}
     
-    def get_pos_TEME(self):
+    def get_pos_ECI(self):
         from sgp4.api import SGP4_ERRORS
         """
 
@@ -273,7 +274,7 @@ class TLE_calc():
         import numpy as np
         GMST = self.GMST()
 
-        pos = self.get_pos_TEME()
+        pos = self.get_pos_ECI()
         
         
         
@@ -304,9 +305,6 @@ class TLE_calc():
         
         return np.sqrt((pos["x"]**2)+(pos["y"]**2)+(pos["z"]**2))-6378.1 #Just computes sqrt(x^2+y^2+z^2)-earth raduis
     
-        
-       
-        
     def get_pos_TOPO(self,accuarcy,lat_of_ground,long_of_ground):
         import numpy as np
         pos_ECEF = self.get_pos_ECEF(accuarcy)
@@ -340,11 +338,42 @@ class TLE_calc():
         
         return d,Az,theta,(x,y,z)
         
-    
-
-
+    def get_vel_TOPO(self,accuarcy,lat_of_ground,long_of_ground):
+        import numpy as np
+        GMST = self.GMST()
+        w_e = 7.2921150
+        pos_ECI = self.get_pos_ECI()
+        pos_ECI = [[pos_ECI["x"]],[pos_ECI["y"]],[pos_ECI["z"]]]
+        vel_ECI = self.get_vel_ECI()["velocity"]
+        vel_ECI = [[vel_ECI[0]],[vel_ECI[1]],[vel_ECI[2]]]
         
-
+        
+        T = np.matrix([[np.cos(GMST), np.sin(GMST),0],
+                       [-np.sin(GMST),np.cos(GMST),0],
+                       [0,0,1]])
+        
+        T_dot = np.matrix([[w_e*np.sin(GMST), w_e*np.cos(GMST),0],
+                       [-w_e*np.cos(GMST),w_e*np.sin(GMST),0],
+                       [0,0,0]])
+        
+        return T*vel_ECI + T_dot*pos_ECI
+    
+    def get_vel_relitive(self,accuarcy,lat_of_ground,long_of_ground):
+        import numpy as np
+        
+        r_1 = self.get_pos_ECEF(accuarcy)
+        r_2 = self.get_pos_ECI()
+        vel_sat = self.get_vel_TOPO(accuarcy, lat_of_ground, long_of_ground)
+        
+        r_3 = [r_1["x"]-r_2["x"],r_1["y"]-r_2["y"],r_1["z"]-r_2["z"]]
+        
+        r_3_mag = np.sqrt(r_3[0]**2+r_3[1]**2+r_3[2]**2)
+        
+        r_3 = r_3/r_3_mag
+        
+        
+        return np.dot(r_3, vel_sat).item(0)
+        
 def test():
     """
     Test file for TLE data that takes most current TLE data for ISS from https://live.ariss.org/tle/ 
@@ -366,7 +395,7 @@ def test():
     
     acc = 10000 # Set accuracy of computation to 100 see class TLE
     pos = sat.get_pos_ECEF(acc)
-    x1,y1,z1 = sat.get_speed()["velocity"]
+
     height = sat.get_height(acc)
     lat = 51.0643
     long = 0.8598
@@ -379,9 +408,9 @@ def test():
           Azmuth: {np.rad2deg(Az)} 
           Elevation angle: {np.rad2deg(elv)}
           Height: {height}
+          Distance: {d}
           """)
     
-
     
 
 

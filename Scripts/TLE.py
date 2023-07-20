@@ -303,80 +303,42 @@ class TLE_calc():
         pos = self.get_pos_ECEF(accuarcy) #get position
         
         return np.sqrt((pos["x"]**2)+(pos["y"]**2)+(pos["z"]**2))-6378.1 #Just computes sqrt(x^2+y^2+z^2)-earth raduis
-
-    def get_slant_range(self, accuarcy,lat_of_ground,long_of_ground):
-        """
-        
-
-        Parameters
-        ----------
-       accuarcy : int
-           The maximum count of the bassel coeffecient.
-        lat_of_ground : float
-            lattitude of the ground station in degrees.
-        long_of_ground : TYPE
-            longitude of ground station in degrees.
-
-        Returns
-        -------
-        d : float
-            slant range.
-        Az : flaot
-            Azmith of sattellite in rad.
-        theta : float
-            eleveation angle in rad.
-
-        """
-        import numpy as np
-        pi = np.pi # For personal taste
-        
-        #Convert lattitude to radians
-        lat_of_ground = lat_of_ground*pi/180 
-        long_of_ground = long_of_ground*pi/180
-
-        delta = self.get_declanation(accuarcy)
-
-        r = self.get_height(accuarcy)+6378.1 #Get height of sattelite above earth 
-        
-        R_e = 6378.1 #raduis of earth
-        
-        #Get long and lat of sattellite and convert to radians
-        pos = self.get_pos_ECEF(accuarcy)
-        lat_of_sat = pos["lat"]
-        #Algorithm in the book
-        
-        H = -(lat_of_sat-lat_of_ground)
-        
-        cos_gamma = (np.sin(long_of_ground)*np.sin(delta))+(np.cos(long_of_ground)*np.cos(delta)*np.cos(H))
-        
-        gamma = np.arccos(cos_gamma)
-        
-        d = np.sqrt((R_e**2)+(r**2)-(2*R_e*cos_gamma))
-        
-        Az = (np.cos(delta)*np.sin(H))/np.sin(gamma)
-        
-        Az = np.arcsin(Az)
-        
-        theta = (r/d)*np.sin(gamma)
-        
-        theta = np.arccos(theta)
-        
-        
-        return d, Az, theta
-    def get_pass(self,accuarcy):
-        import numpy as np
-        
-        pos = self.get_pos_ECEF(accuarcy)
-        lat_of_sat = pos["lat"]
-        long_of_sat = pos["long"]
-        n = self.sat.no_kozai
-        T = (2*np.pi)/n
-        
-        print(T)
+    
         
        
         
+    def get_pos_TOPO(self,accuarcy,lat_of_ground,long_of_ground):
+        import numpy as np
+        pos_ECEF = self.get_pos_ECEF(accuarcy)
+        lat_of_ground = np.deg2rad(lat_of_ground)
+        long_of_ground = np.deg2rad(long_of_ground)
         
+        r_e = 6371
+        
+        x_bar_g = r_e*np.cos(lat_of_ground)*np.cos(long_of_ground)
+        
+        y_bar_g = r_e*np.cos(lat_of_ground)*np.sin(long_of_ground)
+        
+        z_bar_g = r_e*np.sin(lat_of_ground)
+        
+        slant_vec = np.matrix([[pos_ECEF["x"]-x_bar_g], 
+                              [pos_ECEF["y"]-y_bar_g], 
+                              [pos_ECEF["z"]-z_bar_g]])
+        
+        trans_matrix = np.matrix([[np.sin(lat_of_ground)*np.cos(long_of_ground),np.sin(lat_of_ground)*np.sin(long_of_ground),-np.cos(lat_of_ground)],
+                      [-np.sin(long_of_ground),np.cos(long_of_ground),0],
+                      [np.cos(lat_of_ground)*np.cos(long_of_ground),np.cos(lat_of_ground)*np.sin(long_of_ground),np.sin(lat_of_ground)]])
+        
+        pos_vec = trans_matrix*slant_vec
+        
+        x,y,z = pos_vec.item(0),pos_vec.item(1),pos_vec.item(2)
+        d = np.sqrt(x**2+y**2+z**2)
+        
+        Az = np.arctan(y/x)
+        
+        theta = np.arctan(z/np.sqrt(x**2+y**2))
+        
+        return d,Az,theta,(x,y,z)
         
     
 
@@ -403,24 +365,24 @@ def test():
     sat = TLE_calc(line_1,line_2,False) # Initiate a sattellite using the TLE data provided 
     
     acc = 10000 # Set accuracy of computation to 100 see class TLE
-
-    alpha = sat.get_ascension(acc) # Gather relevent data 
-    delta = np.rad2deg(sat.get_declanation(acc))
     pos = sat.get_pos_ECEF(acc)
     x1,y1,z1 = sat.get_speed()["velocity"]
     height = sat.get_height(acc)
-    d,Az, theta = sat.get_slant_range(acc, 51.0643, 0.8598) # Ground station at the location of Ham street Ashford Kent
+    lat = 51.0643
+    long = 0.8598
+    d,Az, elv,q = sat.get_pos_TOPO(acc,lat,long) # Ground station at the location of Ham street Ashford Kent
     
-    # print(f"""
-    #       Lattitude:{np.rad2deg(pos["lat"])}, Longitude:{np.rad2deg(pos["long"])}
-    #       Pos in ECEF (xyz): {pos["x"], pos["y"], pos["z"]}
-    #       Slant length: {d}
-    #       Azmuth: {np.rad2deg(Az)} 
-    #       Elevation angle: {np.rad2deg(theta)}
-    #       Height: {height}
-    #       """)
+    print(f"""
+          Lattitude:{np.rad2deg(pos["lat"])}, Longitude:{np.rad2deg(pos["long"])}
+          Pos in ECEF (xyz): {pos["x"], pos["y"], pos["z"]}
+          Slant length: {d}
+          Azmuth: {np.rad2deg(Az)} 
+          Elevation angle: {np.rad2deg(elv)}
+          Height: {height}
+          """)
     
-    period = sat.get_pass(acc)
+
+    
 
 
 

@@ -305,13 +305,21 @@ class TLE_calc():
         
         return np.sqrt((pos["x"]**2)+(pos["y"]**2)+(pos["z"]**2))-6378.1 #Just computes sqrt(x^2+y^2+z^2)-earth raduis
     
-    def get_pos_TOPO(self,accuarcy,lat_of_ground,long_of_ground):
+    def get_pos_TOPO(self,accuarcy,lat_of_ground,long_of_ground, height_above_sea):
         import numpy as np
         pos_ECEF = self.get_pos_ECEF(accuarcy)
         lat_of_ground = np.deg2rad(lat_of_ground)
         long_of_ground = np.deg2rad(long_of_ground)
         
-        r_e = 6371
+        r_pole =  6357
+        r_equator = 6378
+        
+        term_1 = ((r_equator**2)*np.cos(lat_of_ground))**2+((r_pole**2)*np.sin(lat_of_ground))**2
+        
+        term_2 = (r_equator*np.cos(lat_of_ground))**2+((r_pole)*np.sin(lat_of_ground))**2
+        
+        r_e = np.sqrt(term_1/term_2)+(height_above_sea/1000)
+        
         
         x_bar_g = r_e*np.cos(lat_of_ground)*np.cos(long_of_ground)
         
@@ -332,9 +340,9 @@ class TLE_calc():
         x,y,z = pos_vec.item(0),pos_vec.item(1),pos_vec.item(2)
         d = np.sqrt(x**2+y**2+z**2)
         
-        Az = np.arctan(y/x)
+        Az = np.arctan2(y,x)
         
-        theta = np.arctan(z/np.sqrt(x**2+y**2))
+        theta = np.arctan2(z,np.sqrt(x**2+y**2))
         
         return d,Az,theta,(x,y,z)
         
@@ -381,25 +389,25 @@ def test():
     """
     import urllib.request
     import numpy as np
-    # try:
-    #     f = urllib.request.urlopen('https://live.ariss.org/iss.txt') #Gather TLE data
-    #     url_text = f.read(200).decode('utf-8')
-    #     url_text.split(" ")
-    #     line_1_2 = url_text[13:] # Format the data to get both line 1 and 2 of TLE data 
-    #     line_1 = line_1_2[0:71]
-    #     line_2 = line_1_2[71:]
-    # except:    
-    line_1 = "1 25544U 98067A   23200.04569411  .00013707  00000-0  24898-3 0  9999"
-    line_2 = '2 25544  51.6408 170.6667 0000390  75.0699   8.6204 15.49853169406738'
+    try:
+        f = urllib.request.urlopen('https://live.ariss.org/iss.txt') #Gather TLE data
+        url_text = f.read(200).decode('utf-8')
+        url_text.split(" ")
+        line_1_2 = url_text[13:] # Format the data to get both line 1 and 2 of TLE data 
+        line_1 = line_1_2[0:71]
+        line_2 = line_1_2[71:]
+    except:    
+        line_1 = "1 25544U 98067A   23200.04569411  .00013707  00000-0  24898-3 0  9999"
+        line_2 = '2 25544  51.6408 170.6667 0000390  75.0699   8.6204 15.49853169406738'
     sat = TLE_calc(line_1,line_2,False) # Initiate a sattellite using the TLE data provided 
     
-    acc = 10000 # Set accuracy of computation to 100 see class TLE
+    acc = 100000 # Set accuracy of computation to 100 see class TLE
     pos = sat.get_pos_ECEF(acc)
 
     height = sat.get_height(acc)
     lat = 51.0643
     long = 0.8598
-    d,Az, elv,q = sat.get_pos_TOPO(acc,lat,long) # Ground station at the location of Ham street Ashford Kent
+    d,Az, elv,q = sat.get_pos_TOPO(acc,lat,long,0) # Ground station at the location of Ham street Ashford Kent
     
     print(f"""
           Lattitude:{np.rad2deg(pos["lat"])}, Longitude:{np.rad2deg(pos["long"])}
@@ -411,16 +419,7 @@ def test():
           Distance: {d}
           """)
     
-    
-
-
-
-    
-    
         
 if __name__ == "__main__":
     test()
         
-        
- 
-

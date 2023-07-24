@@ -340,7 +340,7 @@ class TLE_calc():
         x,y,z = pos_vec.item(0),pos_vec.item(1),pos_vec.item(2)
         d = np.sqrt(x**2+y**2+z**2)
         
-        Az = np.arctan2(y,x)
+        Az = np.arctan(y/x)
         
         theta = np.arctan2(z,np.sqrt(x**2+y**2))
         

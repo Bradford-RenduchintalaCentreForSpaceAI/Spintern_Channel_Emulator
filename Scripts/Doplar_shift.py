@@ -64,7 +64,7 @@ def Get_orbital(line_1,line_2,lat,long,height,start_elv, acc = 100):
     d = []
     sec = 0
     step = step/10
-    while np.rad2deg(current_elv)>0:
+    while np.rad2deg(current_elv)>start_elv  :
         time_now = date_at_start+datetime.timedelta(0,sec)
         sat = TLE_calc(line_1, line_2,True,time_now.year,time_now.month,time_now.day,time_now.hour,time_now.minute,
                       time_now.second,time_now.microsecond)
@@ -204,7 +204,7 @@ def All_togther_now_test():
     lat = 51.00653
     long = 0.85587541
     height = 0
-    start_elv = 1
+    start_elv = 0
     Pass_info = Get_orbital(line_1, line_2, lat, long, height, start_elv)
     Start_date = Pass_info[0]
     End_date = Pass_info[1]
@@ -216,8 +216,7 @@ def All_togther_now_test():
     range_rate = Get_range_rate(d)
 
     f_change = Get_freq_change(range_rate)
-    
-    
+
     
     
     
@@ -231,7 +230,7 @@ def All_togther_now_test():
     sub1.xaxis.set_major_formatter(mdates.DateFormatter('%M:%S'))
     sub2.xaxis.set_major_formatter(mdates.DateFormatter('%M:%S'))
     sub3.xaxis.set_major_formatter(mdates.DateFormatter('%M:%S'))
-    sub1.grid(True);sub2.grid(True);sub3.grid(True)
+    sub1.grid(True,"minor");sub2.grid(True,"minor");sub3.grid(True,"minor")
     
     
     

@@ -121,10 +121,7 @@ def Rain_attenuation(lat,elv_angle,h_s,R_zero,f,Pol_tilt,p):
     return A_p
     
     
-    
- 
-    
-def Atmosphere_attenuation(f,pressure,p_w_v_den,t):
+def Gamma_w_o(f,pressure,p_w_v_den,t):
     # From ITU P.676-5 Annex 2
     
     if f >350:
@@ -141,14 +138,19 @@ def Atmosphere_attenuation(f,pressure,p_w_v_den,t):
     gamma_o_63 = 10.63*(r_p**0.9298)*(r_t**2.3284)*np.exp(0.6287*(1-r_t)) # 22i
     gamma_o_66 = 1.944*(r_p**1.6673)*(r_t**-3.3583)*np.exp(-4.1612*(1-r_t)) # 22j
     gamma_o_66_dash = 1.935*(r_p**1.6657)*(r_t**-3.3714)*np.exp(-4.1643*(1-r_t)) #22k
+    
     eta_1 = 6.7665*(r_p**-0.5050)*(r_t**0.5106)*np.exp(1.5663*(1-r_t))-1 #22n
     eta_2 = 27.8843*(r_p**-0.4908 )*(r_t**0.8491)*np.exp(0.5496*(1-r_t))-1 #22o
+    
     a = np.log(eta_2/eta_1)/np.log(3.5)#22l
     b = (4**a)/eta_1 #22m
+    
     xi_1 = 6.9575*(r_p**-0.3461 )*(r_t**0.2535)*np.exp(1.3766*(1-r_t))-1 # 22r
     xi_2 = 42.1309*(r_p**-0.3068)*(r_t**1.2023)*np.exp(2.5147*(1-r_t))-1 # 22s
+    
     c = np.log(xi_2/xi_1)/np.log(3.5) #22p
     d = (4**c)/xi_1 # 22q
+    
     if f <= 60:
         N = 0
     else:
@@ -186,9 +188,10 @@ def Atmosphere_attenuation(f,pressure,p_w_v_den,t):
     xi_w_3 = 0.9561*r_p*(r_t**0.67)+0.0059*p_w_v_den #23d
     xi_w_4 = 0.9543*r_p*(r_t**0.68)+0.0061*p_w_v_den #23e
     xi_w_5 = 0.955*r_p*(r_t**0.68)+0.006*p_w_v_den #23f
-    g_22 = (1+((f-22.235)**2))/((f+22.235)**2) # 23g
-    g_557 = (1+((f-557)**2))/((f+557)**2)
-    g_752 = (1+((f-752)**2))/((f+752)**2)
+    
+    g_22 = 1+((f-22.235)**2)/((f+22.235)**2) # 23g
+    g_557 = 1+((f-557)**2)/((f+557)**2)
+    g_752 = 1+((f-752)**2)/((f+752)**2)
     
     
     #23a
@@ -204,15 +207,13 @@ def Atmosphere_attenuation(f,pressure,p_w_v_den,t):
     term_10 = (302.6*xi_w_5*g_752*np.exp(0.41*(1-r_t)))/(((f-752)**2))
     
     
-    gamma_w = term_1+term_2+(r_t**2.5)*(term_3+term_4+term_5+term_6+term_7+term_8+term_9+term_10)*(f**2)*p_w_v_den*(1E-4)    
+    gamma_w = (term_1+term_2+(r_t**2.5)*(term_3+term_4+term_5+term_6+term_7+term_8+term_9+term_10)*(f**2))*p_w_v_den*(1E-4)    
     
     
     return gamma_o,gamma_w
 
 
-
-
-def test():
+def Gamma_w_o_test():
     import matplotlib.pyplot as plt
     
     f = np.linspace(1,350,10000)
@@ -224,8 +225,8 @@ def test():
     gamma_w = []
     gamma_sum = []
     for i in range(len(f)):
-        gamma_o.append(Atmosphere_attenuation(f[i],pressure,p_w_v_den,t)[0])
-        gamma_w.append(Atmosphere_attenuation(f[i],pressure,p_w_v_den,t)[1])
+        gamma_o.append(Gamma_w_o(f[i],pressure,p_w_v_den,t)[0])
+        gamma_w.append(Gamma_w_o(f[i],pressure,p_w_v_den,t)[1])
         gamma_sum.append(gamma_w[i]+gamma_o[i])
     plt.figure(figsize=(10,14.1))
     plt.plot(f,gamma_w)
@@ -233,13 +234,125 @@ def test():
     plt.plot(f,(gamma_sum), linestyle = '--')
     plt.xscale("log")
     plt.yscale("log")
+    plt.grid(True,"minor")
+    plt.xlabel("Frequency f (GHz)")
+    plt.ylabel("Specific Attenuation dB/Km")
     plt.legend(["H20", "Dry air","tot"])
+    plt.title("Specific attenuation for 1013 hPa 15°C and a water vapour of 7.5 g/m³")
     plt.ylim((10E-4,10E2))
     plt.show()
         
+    
+def Earth_atmosphere_model(h):
+    #from ITU P.835-6
+    import numpy as np
+    h = (6356.766*h)/(6356.766+h)
+    a_o = 95.571899
+    a_1 = -4.011801
+    a_2 = 6.424731E-2
+    a_3 = -4.789660E-4
+    a_4 = 1.340543E-6
+    
+    
+    if h < 11:
+        T = 288.15-6.5*h
+        p = 1013.25*((288.15)/(288.15-6.5*h))**(-34.1632/6.5)
         
+    if h >11 and h<=20:
+        T = 216.65
+        p = 226.3226*np.exp(-34.1632*(h-11)/216.65)
+        
+    if h >20 and h<=32:
+        T = 216.65+(h-20)
+        p = 54.74980*((216.65)/(216.65+(h-20)))**(34.1632)
+        
+    if h>32 and h<=47:
+        T = 228.65+2.8*(h-32)
+        p = 8.680422*((216.65)/(216.65+(h-20)))**(34.1632/2.8)
+        
+    if h > 47 and h <= 51:
+        T = 270.65-2.8*(h-51)
+        p = 1.109106*np.exp(-34.1632*(h-47)/270.65)
+        
+    if h>51 and h <=71:
+        T = 270.65 - 2.8*(h-51)
+        p = 0.6694167*((270.65)/(270.65-2.8*(h-51)))**(-34.1632/2.8)
+        
+    if h>71 and h<=84.852:
+        T = 214.65-2*(h-71)
+        p = 0.03956649*((214.65)/((214.65-2.0*(h-71))))**(-34.1632/2.0)
+    if h>84.852 and h<=86:
+        T = 186.8673
+        p = np.exp(a_o+(a_1*h)+(a_2*h**2)+(a_3*h**3)+(a_4*h**4))
+        
+    if h>86 and h<=91:
+        T = 186.8673
+        p = np.exp(a_o+(a_1*h)+(a_2*h**2)+(a_3*h**3)+(a_4*h**4))
+        
+    if h>91 and h<=100:
+        T = 263.1905-76.3232*(1-((h-91)/(19.9429))**2)**0.5
+        p = np.exp(a_o+(a_1*h)+(a_2*h**2)+(a_3*h**3)+(a_4*h**4))
+        
+    if h>100:
+        T = p = 0
+    
+    return T,p
+        
+def Earth_atmosphere_model_test():
+    import matplotlib.pyplot as plt
+    import numpy as np
+    
+    h = np.linspace(10,99,100)
+    
+    T = []
+    p = []
+
+    for i in range(len(h)):
+        T_h, p_h = Earth_atmosphere_model(i)
+        T.append(T_h)
+        p.append(p_h)
+    
+    
+    fig1, (sub1, sub2) = plt.subplots(2,1, figsize=(10, 10))
+    
+    sub1.plot(T,h)
+    sub2.plot(p,h)
+    sub1.grid(True);sub2.grid(True,"minor")
+    sub2.set_xscale("log")
+    sub2.set_xlabel("pressure")
+    sub1.set_xlabel("tempreture")
+    sub1.set_ylabel("Height")
+    sub2.set_ylabel("Height")
+
+def water_height(f):
+    if f<1 or f>350:
+        ValueError("Frequency too low")
+        
+    if f>=1 and f<=56:
+        h_o = 5.386-(3.32734E-2*f)+(1.87185E-3*f**2)-(3.52087E-5*f**3)+((83.26)/((f-60)**2+1.2))
+    if f>56.7 and f<=63.3:
+        h_o = 10
+    if f>63.3 and f<98.5:
+        term_1 = 0.039581-(1.19751E-3*f)+(9.14810E-6*f**2)
+        term_2 = 1-(0.028687*f)+(2.07858E-4*f**2)
+        h_o = f*(term_1/term_2)+(90.6)/((f-60)**2)
+    if f>=98.5 and f<=350:
+        h_o = 5.542-(1.76414E-3*f)+(3.05354E-6*f**2)+(6.815)/((f-118.75)**2+0.321)
+        
+    
+    return h_o
+    
+def water_vapour_pressure(T,h):
+    #from ITU-R P.835-6
+    import numpy as np
+    ro = 7.5*np.exp(-h/2)
+    
+    e = (ro*T)/216.7
+    
+    return e
+    
 if __name__ == "__main__":
-    test()
+    Earth_atmosphere_model_test()
     
     
     

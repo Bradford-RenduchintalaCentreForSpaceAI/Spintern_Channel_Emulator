@@ -119,99 +119,112 @@ def Rain_attenuation(lat,elv_angle,h_s,R_zero,f,Pol_tilt,p):
     A_p = A_zero*(p/0.01)**term
     
     return A_p
-    
-    
-def Gamma_w_o(f,pressure,p_w_v_den,t):
+        
+def Gamma_const(f,pressure,p_w_v_den,t):
+    import numpy as np
     # From ITU P.676-5 Annex 2
+    theta = 300/t
+    e = p_w_v_den
+    p = pressure
     
-    if f >350:
-        raise ValueError("Frequency too high")
+    f_o_o = [50.474238, 50.987749, 51.50335, 52.02141, 52.542394, 53.066907, 53.595749, 54.13, 54.671159, 55.221367, 
+             55.783802, 56.264775, 56.363389, 56.968206, 57.612484, 58.323877, 58.44659, 59.164207, 59.590983, 
+             60.306061, 60.434776, 61.15056, 61.800154, 62.411215, 62.48626, 62.997977, 63.568518, 64.127767, 
+             64.678903, 65.224071, 65.764772, 66.302091, 66.83683, 67.369598, 67.900867, 68.431005, 68.960311, 
+             118.750343, 368.49835, 424.763124, 487.24937, 715.39315, 773.839675, 834.14533]
+   
+    a_1 =[0.94, 2.46, 6.08, 14.14, 31.02, 64.1, 124.7, 228.0, 391.8, 631.6, 953.5, 548.9, 1344.0, 1763.0, 2141.0,
+            2386.0, 1457.0, 2404.0, 2112.0, 2124.0, 2461.0, 2504.0, 2298.0, 1933.0, 1517.0, 1503.0, 1087.0, 733.5, 
+            463.5, 274.8, 153.0, 80.09, 39.46, 18.32, 8.01, 3.3, 1.28, 945.0, 67.9, 638.0, 235.0, 99.6, 671.0, 180.0]
     
-    """ Gamma_o Calc"""
-    r_p = pressure/1013
-    r_t = 288/(273+t)
+    a_2 = [9.694, 8.694, 7.744, 6.844, 6.004, 5.224, 4.484, 3.814, 3.194, 2.624, 2.119, 0.015, 1.66, 1.26, 0.915,
+             0.626, 0.084, 0.391, 0.212, 0.212, 0.391, 0.626, 0.915, 1.26, 0.083, 1.665, 2.115, 2.62, 3.195, 3.815, 
+             4.485, 5.225, 6.005, 6.845, 7.745, 8.695, 9.695, 0.009, 0.049, 0.044, 0.049, 0.145, 0.13, 0.147]
     
-    gamma_o_dash_54 = 2.128*(r_p**1.4954)*(r_t**-1.6032)*np.exp(-2.5280*(1-r_t)) # 22e
-    gamma_o_54 = 2.136*(r_p**1.4975)*(r_t**-1.5852)*np.exp(-2.5196*(1-r_t)) # 22f
-    gamma_o_57 = 9.984*(r_p**0.9313)*(r_t**2.6732)*np.exp(0.8563*(1-r_t)) # 22g
-    gamma_o_60 = 15.42*(r_p**0.8595)*(r_t**3.6178)*np.exp(1.1521*(1-r_t)) # 22h
-    gamma_o_63 = 10.63*(r_p**0.9298)*(r_t**2.3284)*np.exp(0.6287*(1-r_t)) # 22i
-    gamma_o_66 = 1.944*(r_p**1.6673)*(r_t**-3.3583)*np.exp(-4.1612*(1-r_t)) # 22j
-    gamma_o_66_dash = 1.935*(r_p**1.6657)*(r_t**-3.3714)*np.exp(-4.1643*(1-r_t)) #22k
+    a_3 = [8.6, 8.7, 8.9, 9.2, 9.4, 9.7, 10.0, 10.2, 10.5, 10.79, 11.1, 16.46, 11.44, 11.81, 12.21, 12.66, 14.49, 
+             13.19, 13.6, 13.82, 12.97, 12.48, 12.07, 11.71, 14.68, 11.39, 11.08, 10.78, 10.5, 10.2, 10.0, 9.7, 9.4,
+             9.2, 8.9, 8.7, 8.6, 16.3, 19.2, 19.16, 19.2, 18.1, 18.1, 18.1]
+    a_4 = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 
+             0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.6, 0.6, 0.6, 0.6, 
+             0.6, 0.6]
     
-    eta_1 = 6.7665*(r_p**-0.5050)*(r_t**0.5106)*np.exp(1.5663*(1-r_t))-1 #22n
-    eta_2 = 27.8843*(r_p**-0.4908 )*(r_t**0.8491)*np.exp(0.5496*(1-r_t))-1 #22o
+    a_5 = [1.6, 1.4, 1.165, 0.883, 0.579, 0.252, -0.066, -0.314, -0.706, -1.151, -0.92, 2.881, -0.596, -0.556, -2.414
+             ,-2.635, 6.848, -6.032, 8.266, -7.17, 5.664, 1.731, 1.738, -0.048, -4.29, 0.134, 0.541, 0.814, 0.415, 0.069
+             ,-0.143, -0.428, -0.726, -1.002, -1.255, -1.5, -1.7, -0.247, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+    a_6 = [5.52, 5.52, 5.52, 5.52, 5.52, 5.52, 5.52, 5.52, 5.52, 5.514, 5.025, -0.069, 4.75, 4.104, 3.536,
+             2.686, -0.647, 1.858, -1.413, 0.916, -2.323, -3.039, -3.797, -4.277, 0.238, -4.86, -5.079, -5.525,
+             -5.52, -5.52, -5.52, -5.52, -5.52, -5.52, -5.52, -5.52, -5.52, 0.003, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
     
-    a = np.log(eta_2/eta_1)/np.log(3.5)#22l
-    b = (4**a)/eta_1 #22m
     
-    xi_1 = 6.9575*(r_p**-0.3461 )*(r_t**0.2535)*np.exp(1.3766*(1-r_t))-1 # 22r
-    xi_2 = 42.1309*(r_p**-0.3068)*(r_t**1.2023)*np.exp(2.5147*(1-r_t))-1 # 22s
+    f_o_w = [22.23508, 67.81396, 119.995941, 183.310074, 321.225644, 325.152919, 336.187, 380.197372, 390.134508,
+             437.346667, 439.150812, 443.018295, 448.001075, 470.888947, 474.689127, 488.491133, 503.568532, 
+             504.482692, 556.936002, 620.700807, 658.0065, 752.033227, 841.073593, 859.865, 899.407, 902.555, 
+             906.205524, 916.171582, 970.315022, 987.926764]
     
-    c = np.log(xi_2/xi_1)/np.log(3.5) #22p
-    d = (4**c)/xi_1 # 22q
+    b_1 = [0.109, 0.0011, 0.0007, 2.3, 0.0464, 1.54, 0.001, 11.9, 0.0044, 0.0637, 0.921, 0.194, 10.6, 0.33, 1.28,
+           0.253, 0.0374, 0.0125, 510.0, 5.09, 0.274, 250.0, 0.013, 0.133, 0.055, 0.038, 0.183, 8.56, 9.16, 138.0]
+    b_2 = [2.143, 8.735, 8.356, 0.668, 6.181, 1.54, 9.829, 1.048, 7.35, 5.05, 3.596, 5.05, 1.405, 3.599, 2.381, 2.853, 
+           6.733, 6.733, 0.159, 2.2, 7.82, 0.396, 8.18, 7.989, 7.917, 8.432, 5.111, 1.442, 1.92, 0.258]
+    b_3 = [28.11, 28.58, 29.48, 28.13, 23.03, 27.83, 26.93, 28.73, 21.52, 18.45, 21.0, 18.6, 26.32, 21.52, 
+           23.55, 26.02, 16.12, 16.12, 32.1, 24.38, 32.1, 30.6, 15.9, 30.6, 29.85, 28.65, 24.08, 26.7, 25.5, 
+           29.85]
+    b_4 = [0.69, 0.69, 0.7, 0.64, 0.67, 0.68, 0.69, 0.69, 0.63, 0.6, 0.63, 0.6, 0.66, 0.66, 0.65, 0.69, 0.61, 
+           0.61, 0.69, 0.71, 0.69, 0.68, 0.33, 0.68, 0.68, 0.7, 0.7, 0.7, 0.64, 0.68]
+    b_5 =[4.8, 4.93, 4.78, 5.3, 4.69, 4.85, 4.74, 5.38, 4.81, 4.23, 4.29, 4.23, 4.84, 4.57, 4.65, 5.04, 3.98,
+          4.01, 4.11, 4.68, 4.14, 4.09, 5.76, 4.09, 4.53, 5.1, 4.7, 4.78, 4.94, 4.55]
+    b_6 = [1.0, 0.82, 0.79, 0.85, 0.54, 0.74, 0.61, 0.84, 0.55, 0.48, 0.52, 0.5, 0.67, 0.65, 0.64, 0.72,
+           0.43, 0.45, 1.0, 0.68, 1.0, 0.84, 0.45, 0.84, 0.9, 0.95, 0.53, 0.78, 0.67, 0.9]
     
-    if f <= 60:
-        N = 0
-    else:
-        N = -15
+    
+    
+    
+    
+    N_dash_dash_w = f*(3.57*(theta**7.5)*e+0.113*p)*(10E-7)*e*(theta**3)*(10E-7)*e*(theta**3)
+    
+    
+    
+    d = (5.6E-4)*(p+1.1*e)*theta
+    
+    term_1 = (6.14E-5/(d*(1+(f/d)**2)))
+    term_2 = (1-(1.2E-5*(f**1.5)))
+    
+    N_dash_dash_d = f*p*(theta**2)*(term_1+1.4E-12*term_2*p*(theta**(1.5)))
+    F_i_o = [];s_i_o = []
+    for i in range(len(f_o_o)):
+        delta_f = (a_3[i]*10E-4)*(p*(theta**(0.8-a_4[i]))+1.1*e*theta)
+        delta = (a_5[i]+(a_6[i]*theta))*10E-4*p*(theta**(0.8))
+        term_1 = ((delta_f-delta*(f_o_o[i]-f))/(((f_o_o[i]-f)**2)+delta_f**2))
+        term_2 = ((delta_f-delta*(f_o_o[i]+f))/(((f_o_o[i]+f)**2)+delta_f**2))
+        F_i_o.append(((f/f_o_o[i])*(term_1+term_2)))
+        s_i_o.append(a_1[i]*10E-7*e*(theta**3)*np.exp(a_2[i]*(1-theta)))
+    F_i_w = [];s_i_w = []  
+    for i in range(len(f_o_w)):
+        delta_f = b_3[i]*10E-3*(p*(theta**b_4[i])+b_5[i]*e*(theta**b_6[i]))
+        term_1 = ((delta_f)/(((f_o_o[i]-f)**2)+delta_f**2))
+        term_2 = ((delta_f)/(((f_o_o[i]+f)**2)+delta_f**2))
+        F_i_w.append(((f/f_o_o[i])*(term_1+term_2)))
+        s_i_w.append((b_1[i]*10E-1*e*(theta**(3.5))*np.exp(b_2[i]*(1-theta))))
+    
+    
+    Coef = 0
+    for i in range(len(f_o_o)):
+        if i <= len(f_o_w)-1:
+            Coef += F_i_o[i]*F_i_w[i]+s_i_o[i]*s_i_w[i]+N_dash_dash_w+N_dash_dash_w
+        else:
+            Coef+= F_i_o[i]+s_i_o[i]+N_dash_dash_w+N_dash_dash_w
         
-    if f <= 54:
-        # 22a
-        term_1 = (7.34*(r_p**2)*(r_t**3))/((f**2)+0.36*(r_p**2)*(r_t**2))
-        term_2 = (0.3429*b*gamma_o_dash_54)/(((54-f)**a)+b)
-        gamma_o = (term_1+term_2)*(f**2)*1E-3 #22a
-        
-    elif f > 54 and f < 66:
-        term_1 = ((54**-N)*np.log(gamma_o_54)*(f-57)*(f-60)*(f-63)*(f-66))/1944
-        term_2 = ((-57**-N)*np.log(gamma_o_57)*(f-54)*(f-60)*(f-63)*(f-66))/486
-        term_3 = ((60**-N)*np.log(gamma_o_60)*(f-54)*(f-57)*(f-63)*(f-66))/324
-        term_4 = ((-63**-N)*np.log(gamma_o_63)*(f-54)*(f-57)*(f-60)*(f-66))/486
-        term_5 = ((66**-N)*np.log(gamma_o_66)*(f-54)*(f-57)*(f-60)*(f-63))/1944
-        gamma_o = np.exp((term_1+term_2+term_3+term_4+term_5)*(f**N)) #22b
-        
-    elif f >= 66 and f < 120:
-        term_1 = (0.2296*d*gamma_o_66_dash)/(((f-66)**c)+d)
-        term_2 = (0.286*(r_p**2)*(r_t**3.8))/(((f-118.75)**2)+2.97*(r_p**2)*(r_t**1.6))
-        gamma_o = ((term_1+term_2)*(f**2))*1E-3##22c
-    elif f>= 120 and f <= 350:
-        term_1 = 3.02*1E-4*(r_p**2)*(r_t**3.5)
-        term_2 = (1.5827*(r_p**2)*(r_t**3))/((f-66)**2)
-        term_3 = (0.286*(r_p**2)*(r_t**3.8))/(((f-118.75)**2)+2.97*(r_p**2)*(r_t**1.6))
-        gamma_o = (term_1+term_2+term_3)*(f**2)*1E-3#22d
-    
-        
-    """Gamma_w Calc"""
-    
-    xi_w_1 = 0.9544*r_p*(r_t**0.69)+0.0061*p_w_v_den #23b
-    xi_w_2 = 0.95*r_p*(r_t**0.64)+0.0067*p_w_v_den #23c
-    xi_w_3 = 0.9561*r_p*(r_t**0.67)+0.0059*p_w_v_den #23d
-    xi_w_4 = 0.9543*r_p*(r_t**0.68)+0.0061*p_w_v_den #23e
-    xi_w_5 = 0.955*r_p*(r_t**0.68)+0.006*p_w_v_den #23f
-    
-    g_22 = 1+((f-22.235)**2)/((f+22.235)**2) # 23g
-    g_557 = 1+((f-557)**2)/((f+557)**2)
-    g_752 = 1+((f-752)**2)/((f+752)**2)
     
     
-    #23a
-    term_1 = (3.13E-2)*r_p*(r_t**2)
-    term_2 = (1.76E-3)*p_w_v_den*(r_t**8.5)
-    term_3 = (3.84*xi_w_1*g_22*np.exp(2.23*(1-r_t)))/(((f-22.235)**2)+9.42*(xi_w_1**2))
-    term_4 = (10.48*xi_w_2*np.exp(0.7*(1-r_t)))/(((f-183.31)**2)+9.48*(xi_w_2**2))
-    term_5 = (0.078*xi_w_3*np.exp(6.4385*(1-r_t)))/(((f-321.226)**2)+6.29*(xi_w_3**2))
-    term_6 = (3.76*xi_w_4*np.exp(1.6*(1-r_t)))/(((f-325.153)**2)+9.22*(xi_w_4**2))
-    term_7 = (26.36*xi_w_5*np.exp(1.09*(1-r_t)))/(((f-380)**2))
-    term_8 = (17.87*xi_w_5*np.exp(1.46*(1-r_t)))/(((f-448)**2))
-    term_9 = (883.7*xi_w_5*g_557*np.exp(0.17*(1-r_t)))/(((f-557)**2))
-    term_10 = (302.6*xi_w_5*g_752*np.exp(0.41*(1-r_t)))/(((f-752)**2))
+    N_dash_dash = Coef+N_dash_dash_w+N_dash_dash_w
     
     
-    gamma_w = (term_1+term_2+(r_t**2.5)*(term_3+term_4+term_5+term_6+term_7+term_8+term_9+term_10)*(f**2))*p_w_v_den*(1E-4)    
+    return f*0.1820*N_dash_dash
     
-    
-    return gamma_o,gamma_w
 
+    
+    A = 2
+
+    return A
 
 def Gamma_w_o_test():
     import matplotlib.pyplot as plt
@@ -222,27 +235,20 @@ def Gamma_w_o_test():
     t = 15
     
     gamma_o = []
-    gamma_w = []
-    gamma_sum = []
     for i in range(len(f)):
-        gamma_o.append(Gamma_w_o(f[i],pressure,p_w_v_den,t)[0])
-        gamma_w.append(Gamma_w_o(f[i],pressure,p_w_v_den,t)[1])
-        gamma_sum.append(gamma_w[i]+gamma_o[i])
+        gamma_o.append(Gamma_const(f[i],pressure,p_w_v_den,t))
+        print(gamma_o[i])
     plt.figure(figsize=(10,14.1))
-    plt.plot(f,gamma_w)
     plt.plot(f,gamma_o)
-    plt.plot(f,(gamma_sum), linestyle = '--')
-    plt.xscale("log")
-    plt.yscale("log")
+    # plt.xscale("log")
+    # plt.yscale("log")
     plt.grid(True,"minor")
     plt.xlabel("Frequency f (GHz)")
     plt.ylabel("Specific Attenuation dB/Km")
-    plt.legend(["H20", "Dry air","tot"])
     plt.title("Specific attenuation for 1013 hPa 15°C and a water vapour of 7.5 g/m³")
-    plt.ylim((10E-4,10E2))
+    # plt.ylim((10E-4,10E2))
     plt.show()
         
-    
 def Earth_atmosphere_model(h):
     #from ITU P.835-6
     import numpy as np
@@ -324,11 +330,11 @@ def Earth_atmosphere_model_test():
     sub1.set_ylabel("Height")
     sub2.set_ylabel("Height")
 
-def water_height(f):
+def Dry_water_height(f):
     if f<1 or f>350:
-        ValueError("Frequency too low")
+        ValueError("Frequency too low/hig=h")
         
-    if f>=1 and f<=56:
+    if f>=1 and f<=56.7:
         h_o = 5.386-(3.32734E-2*f)+(1.87185E-3*f**2)-(3.52087E-5*f**3)+((83.26)/((f-60)**2+1.2))
     if f>56.7 and f<=63.3:
         h_o = 10
@@ -342,6 +348,18 @@ def water_height(f):
     
     return h_o
     
+def Wet_water_height(f):
+    if f<1 or f>350:
+        ValueError("Frequency too low/hig=h")
+    term_1 = 1.161/((f-22.23)**2+2.91)
+    term_2 = 3.33/((f-183.3)**2+4.58)
+    term_3 = 1.90/((f-325.1)**2+3.34)
+    
+    
+    h_w = 1.65*(1+term_1+term_2+term_3)
+    
+    return h_w
+
 def water_vapour_pressure(T,h):
     #from ITU-R P.835-6
     import numpy as np
@@ -349,10 +367,44 @@ def water_vapour_pressure(T,h):
     
     e = (ro*T)/216.7
     
-    return e
+    return e,ro
+   
+def Zenith_attenuation_test():
+    import numpy as np
+    import matplotlib.pyplot as plt
+    f = np.arange(1,350,0.05)
+    h = np.linspace(0,20,5)
+    T = [];p = [];ro = [];Zenith = [[] for i in range(len(h))]
+    for i in range(len(h)):
+        T_current, p_current = Earth_atmosphere_model(h[i])
+        T.append(T_current-273.7);p.append(p_current)
+        e_current, ro_current = water_vapour_pressure(T_current, h[i]);ro.append(ro_current)
+        for ii in range(len(f)):
+            Gamma_const_current = Gamma_const(f[ii], p[i], ro[i], T[i])
+            h_o = Dry_water_height(f[ii])
+            h_w = Dry_water_height(f[ii])
+            Zenith[i].append(Gamma_const_current[0]*h_o+Gamma_const_current[1]*h_w)
     
+    
+    plt.figure(figsize=(10,10))
+    for i in range(len(h)):
+        plt.plot(f,Zenith[i],label = f'{h[i]}Km')
+    plt.yscale("log")
+    plt.legend()
+    plt.xlim((50, 70))
+    plt.ylim((10**(-2), 10**(3)))
+    plt.grid(True,"minor")
+    plt.show()
+    
+            
+    
+    
+    
+
+
+
 if __name__ == "__main__":
-    Earth_atmosphere_model_test()
+    Gamma_w_o_test()
     
     
     

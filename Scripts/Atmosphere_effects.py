@@ -123,7 +123,7 @@ def Rain_attenuation(lat,elv_angle,h_s,R_zero,f,Pol_tilt,p):
 def Gamma_const(f,pressure,p_w_v_den,t):
     import numpy as np
     # From ITU P.676-5 Annex 2
-    theta = 300/t
+    theta = 300/(t)
     e = p_w_v_den
     p = pressure
     
@@ -177,9 +177,9 @@ def Gamma_const(f,pressure,p_w_v_den,t):
     
     
     
+    term_1 = ((3.57*(theta**7.5)*e)+0.113*p)
     
-    
-    N_dash_dash_w = f*(3.57*(theta**7.5)*e+0.113*p)*(10E-7)*e*(theta**3)*(10E-7)*e*(theta**3)
+    N_dash_dash_w = f*(term_1)*(10E-7)*e*(theta**3)
     
     
     
@@ -189,42 +189,33 @@ def Gamma_const(f,pressure,p_w_v_den,t):
     term_2 = (1-(1.2E-5*(f**1.5)))
     
     N_dash_dash_d = f*p*(theta**2)*(term_1+1.4E-12*term_2*p*(theta**(1.5)))
-    F_i_o = [];s_i_o = []
+    F_i_o = 0;s_i_o = 0
     for i in range(len(f_o_o)):
         delta_f = (a_3[i]*10E-4)*(p*(theta**(0.8-a_4[i]))+1.1*e*theta)
-        delta = (a_5[i]+(a_6[i]*theta))*10E-4*p*(theta**(0.8))
+        delta = ((a_5[i]+(a_6[i]*theta))*10E-4)*p*(theta**(0.8))
         term_1 = ((delta_f-delta*(f_o_o[i]-f))/(((f_o_o[i]-f)**2)+delta_f**2))
         term_2 = ((delta_f-delta*(f_o_o[i]+f))/(((f_o_o[i]+f)**2)+delta_f**2))
-        F_i_o.append(((f/f_o_o[i])*(term_1+term_2)))
-        s_i_o.append(a_1[i]*10E-7*e*(theta**3)*np.exp(a_2[i]*(1-theta)))
-    F_i_w = [];s_i_w = []  
+        F_i_o += ((f/f_o_o[i])*(term_1+term_2))
+        s_i_o += a_1[i]*10E-7*e*(theta**3)*np.exp(a_2[i]*(1-theta))
+    F_i_w = 0;s_i_w = 0  
     for i in range(len(f_o_w)):
         delta_f = b_3[i]*10E-3*(p*(theta**b_4[i])+b_5[i]*e*(theta**b_6[i]))
         term_1 = ((delta_f)/(((f_o_o[i]-f)**2)+delta_f**2))
         term_2 = ((delta_f)/(((f_o_o[i]+f)**2)+delta_f**2))
-        F_i_w.append(((f/f_o_o[i])*(term_1+term_2)))
-        s_i_w.append((b_1[i]*10E-1*e*(theta**(3.5))*np.exp(b_2[i]*(1-theta))))
+        F_i_w += ((f/f_o_o[i])*(term_1+term_2))
+        s_i_w +=(b_1[i]*10E-1*e*(theta**(3.5))*np.exp(b_2[i]*(1-theta)))
     
-    
-    Coef = 0
-    for i in range(len(f_o_o)):
-        if i <= len(f_o_w)-1:
-            Coef += F_i_o[i]*F_i_w[i]+s_i_o[i]*s_i_w[i]+N_dash_dash_w+N_dash_dash_w
-        else:
-            Coef+= F_i_o[i]+s_i_o[i]+N_dash_dash_w+N_dash_dash_w
-        
-    
-    
-    N_dash_dash = Coef+N_dash_dash_w+N_dash_dash_w
-    
-    
-    return f*0.1820*N_dash_dash
     
 
+    Coef = (s_i_o+s_i_w)*(F_i_o+F_i_w)
     
-    A = 2
+    
+    N_dash_dash = np.imag(Coef+N_dash_dash_d+N_dash_dash_w)
+    
+    #1082547444113268.4
+    return 0.1820*f*N_dash_dash
+    
 
-    return A
 
 def Gamma_w_o_test():
     import matplotlib.pyplot as plt
@@ -232,7 +223,7 @@ def Gamma_w_o_test():
     f = np.linspace(1,350,10000)
     pressure  = 1013.25
     p_w_v_den = 7.5
-    t = 15
+    t = 15-273.7
     
     gamma_o = []
     for i in range(len(f)):
@@ -241,7 +232,7 @@ def Gamma_w_o_test():
     plt.figure(figsize=(10,14.1))
     plt.plot(f,gamma_o)
     # plt.xscale("log")
-    # plt.yscale("log")
+    plt.yscale("log")
     plt.grid(True,"minor")
     plt.xlabel("Frequency f (GHz)")
     plt.ylabel("Specific Attenuation dB/Km")

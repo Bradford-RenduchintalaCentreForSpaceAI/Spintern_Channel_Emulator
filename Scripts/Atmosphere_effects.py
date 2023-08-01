@@ -420,7 +420,7 @@ def Total_atmos_atten_test():
     Height_of_sat = 100
     Height_of_ground = 1
     f = 30
-    elv_rad = np.linspace(-np.pi/2,np.deg2rad(-10),25)
+    elv_rad = np.linspace(-np.pi/2,np.pi/2,50)
     elv_deg = np.rad2deg(elv_rad)
     A_g = [[],[],[]]
     
@@ -457,10 +457,64 @@ def Total_atmos_atten_test():
     sub2.set_yscale("log")
     sub1.set_ylim(((0.001,1000)))
     sub2.set_ylim(((0.001,1000)))
-    sub1.set_xlim(((-90,0)))
-    sub2.set_xlim(((-90,0)))
+    # sub1.set_xlim(((-90,0)))
+    # sub2.set_xlim(((-90,0)))
     plt.show()
-    
+def Total_atmos_atten_test1():
+     import matplotlib.pyplot as plt
+     import os
+     Height_of_sat = 100
+     Height_of_ground = 1
+     f = 30
+     
+     
+     t_o,p_o = Earth_atmosphere_model(0)
+     e_o = water_vapour_pressure(t_o, 0, p_o)[1]
+     n_o = Apparent_elv(p_o, t_o, e_o)
+     
+     t_m,p_m = Earth_atmosphere_model(100)
+     e_m = water_vapour_pressure(t_m, 100, p_m)[1]
+     n_m = Apparent_elv(p_m, t_m, e_m)
+     
+     ratio = ((6372*n_o)/(6471*n_m))
+     
+     max_real_elv = np.deg2rad(-9.48)+np.arccos(ratio*np.cos(np.deg2rad(-9.48)))
+     
+     
+     
+     elv_rad = np.linspace(-np.pi/2,np.deg2rad(-1),20)
+     
+     
+     elv_rad_plot = []
+     
+     for i in range(len(elv_rad)):
+         elv_rad_plot.append(elv_rad[i]+np.arccos(ratio*np.cos(elv_rad[i])))
+     
+     A_g = [[],[],[]]   
+     for i in range(len(elv_rad)):
+         A_g[0].append(Total_atmos_atten(Height_of_ground, Height_of_sat, elv_rad[i], f,2.5))
+         A_g[1].append(Total_atmos_atten(Height_of_ground, Height_of_sat, elv_rad[i], f,7.5))
+         A_g[2].append(Total_atmos_atten(Height_of_ground, Height_of_sat, elv_rad[i], f,12.5))
+         print(f"{((i+1)/len(elv_rad))*100}%")
+
+     
+     # fig1, (sub1, sub2) = plt.subplots(2,1, figsize=(10, 10))
+     fig1, (sub1) = plt.subplots(1,1, figsize=(10, 10))
+     sub1.plot(np.rad2deg(elv_rad_plot),A_g[0], label = "2.5",linestyle = '-')
+     sub1.plot(np.rad2deg(elv_rad_plot),A_g[1], label = "7.5",linestyle = "dashdot")
+     sub1.plot(np.rad2deg(elv_rad_plot),A_g[2], label = "12.5",linestyle = '--')
+     sub1.set_yscale("log")
+     sub1.set_ylim(((0.001,1000)))
+     sub1.set_xlim(((-90,0)))
+     sub1.grid(True,"minor")
+     # sub2.plot(elv_deg,A_g[0], label = "2.5",linestyle = '-')
+     # sub2.plot(elv_deg,A_g[1], label = "7.5",linestyle = "dashdot")
+     # sub2.plot(elv_deg,A_g[2], label = "12.5",linestyle = '--')
+     # sub2.set_yscale("log")
+     # sub2.set_ylim(((0.001,1000)))
+     # sub2.set_xlim(((-90,0)))
+     plt.show()
+     print(print(-np.rad2deg(elv_rad_plot)))  
     
 def elv_angle_test():
     import numpy as np
@@ -488,6 +542,7 @@ def elv_angle_test():
    
 if __name__ == "__main__":
     Total_atmos_atten_test()
+    elv_angle_test()
     # x = input("input ")
     # if x == "1":    
     #     Zenith_attenuation_test()

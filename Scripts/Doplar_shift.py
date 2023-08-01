@@ -38,7 +38,6 @@ def Get_orbital(line_1,line_2,lat,long,height,start_elv, acc = 100):
     import datetime
     from datetime import timezone
     
-    init = datetime.datetime.now(timezone.utc)
     sat = TLE_calc(line_1, line_2,False)
     d,Az1, elv1,q = sat.get_pos_TOPO(acc,lat,long,height)
     sec = 0
@@ -170,7 +169,6 @@ def Get_freq_change(range_rate):
     return freq_change
         
 def Doppler_shift_test():
-    import numpy as np
     import datetime
     import csv
     import matplotlib.pyplot as plt
@@ -207,7 +205,6 @@ def All_togther_now_test():
     start_elv = 0
     Pass_info = Get_orbital(line_1, line_2, lat, long, height, start_elv)
     Start_date = Pass_info[0]
-    End_date = Pass_info[1]
     elv = Pass_info[2]
     d = Pass_info[3]
     time_window = Pass_info[4]

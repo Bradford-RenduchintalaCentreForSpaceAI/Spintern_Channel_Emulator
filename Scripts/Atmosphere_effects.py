@@ -218,7 +218,7 @@ def Gamma_const(f,t,pressure,e):
        
    
     N_o += N_d_dash
-    #N_o = np.imag(N_o)
+
     N_w = 0
     for i in range(len(f_o_w)):
         term_1 = b_3[i]*1E-4
@@ -238,14 +238,7 @@ def Gamma_const(f,t,pressure,e):
         term_3 = np.exp(b_2[i]*(1-theta))
         S_i_w = term_1*term_2*term_3
         N_w += S_i_w*F_i_w
-    #N_w = np.imag(N_w)
-       
-       
-       
-       
    
-   
-    #1082547444113268.4
     return (N_w+N_o)*0.1820*f
 
 def Gamma_w_o_test():
@@ -353,36 +346,6 @@ def Earth_atmosphere_model_test():
     sub1.set_ylabel("Height")
     sub2.set_ylabel("Height")
 
-def Dry_water_height(f):
-    if f<1 or f>350:
-        ValueError("Frequency too low/hig=h")
-       
-    if f>=1 and f<=56.7:
-        h_o = 5.386-(3.32734E-2*f)+(1.87185E-3*f**2)-(3.52087E-5*f**3)+((83.26)/((f-60)**2+1.2))
-    if f>56.7 and f<=63.3:
-        h_o = 10
-    if f>63.3 and f<98.5:
-        term_1 = 0.039581-(1.19751E-3*f)+(9.14810E-6*f**2)
-        term_2 = 1-(0.028687*f)+(2.07858E-4*f**2)
-        h_o = f*(term_1/term_2)+(90.6)/((f-60)**2)
-    if f>=98.5 and f<=350:
-        h_o = 5.542-(1.76414E-3*f)+(3.05354E-6*f**2)+(6.815)/((f-118.75)**2+0.321)
-       
-   
-    return h_o
-   
-def Wet_water_height(f):
-    if f<1 or f>350:
-        ValueError("Frequency too low/hig=h")
-    term_1 = 1.161/((f-22.23)**2+2.91)
-    term_2 = 3.33/((f-183.3)**2+4.58)
-    term_3 = 1.90/((f-325.1)**2+3.34)
-   
-   
-    h_w = 1.65*(1+term_1+term_2+term_3)
-   
-    return h_w
-
 def water_vapour_pressure(T,h,p_o):
     #from ITU-R P.835-6
     import numpy as np
@@ -416,32 +379,35 @@ def Zenith_attenuation_test():
     plt.ylim((10**(-3), 10**(2)))
     plt.grid(True,"minor")
     plt.show()
-   
+def Apparent_elv(P,T,e):
+    #from TU-R P.45
+    N = (77.6*(P/T))-(5.6*(e/T))+((3.75E5)*(e/T**2))
+    return 1+N*1E-7
+
 def Total_atmos_atten(Height_of_ground,Height_of_sat,elv,f,wvd):
     import numpy as np
+    # elv = elv+np.deg2rad(9)
     H_s = Height_of_sat
     H_g = Height_of_ground
-    A_g_h = [];n = []
-    h = np.linspace(H_g, H_s,1000)
+    A_g_h = [];n = [];elv_array= []
+    h = np.linspace(H_g, H_s,100)
    
     T_orig,P_tot_orig = Earth_atmosphere_model(H_g)
     e_orig = water_vapour_pressure(T_orig, H_g, wvd)[1]
     P_d_orig = P_tot_orig-e_orig
-    N_orig = (77.6*(P_d_orig/T_orig))+(72*(e_orig/T_orig))+((3.75E5)*(e_orig/T_orig**2))
-   
-    n_orig = 1+N_orig*1E-6
-   
+    
+    n_orig= Apparent_elv(P_d_orig, T_orig, e_orig)
     orig_term = (6371+H_g)*n_orig
    
     for i in range(len(h)):
         T,P = Earth_atmosphere_model(h[i])
         ro,e = water_vapour_pressure(T, h[i], wvd)
         P_d = P-e
-        N = (77.6*(P_d/T))+(72*(e/T)+((3.75E5)*(e/T**2)))
-        n =  1+N*1E-6
-        now_term = (6371+h[i])*n
+        nq = Apparent_elv(P, T, e) 
+        now_term = (6371+h[i])*nq
         cos_elv_apparent = (orig_term/now_term)*np.cos(elv)
-        term_1 = np.sqrt(1-cos_elv_apparent**2)
+        elv_array.append(np.arccos(cos_elv_apparent))
+        term_1 = np.sqrt(1-(cos_elv_apparent**2))
         gamma = Gamma_const(f, T, P, e)
         A_g_h.append(gamma/term_1)
        
@@ -452,27 +418,76 @@ def Total_atmos_atten_test():
     import matplotlib.pyplot as plt
     import os
     Height_of_sat = 100
-    Height_of_ground = 1.0
+    Height_of_ground = 1
     f = 30
-    elv = np.linspace(-np.pi/2,np.deg2rad(-10),10)
-   
-   
-    A_g = []
-    for i in range(len(elv)):
-        A_g.append(Total_atmos_atten(Height_of_ground, Height_of_sat, elv[i], f,2.5))
-        print(f"{(i/len(elv))*100}%")
+    elv_rad = np.linspace(-np.pi/2,np.deg2rad(-10),25)
+    elv_deg = np.rad2deg(elv_rad)
+    A_g = [[],[],[]]
+    
+    for i in range(len(elv_rad)):
+        A_g[0].append(Total_atmos_atten(Height_of_ground, Height_of_sat, elv_rad[i], f,2.5))
+        A_g[1].append(Total_atmos_atten(Height_of_ground, Height_of_sat, elv_rad[i], f,7.5))
+        A_g[2].append(Total_atmos_atten(Height_of_ground, Height_of_sat, elv_rad[i], f,12.5))
+        print(f"{(i/len(elv_rad))*100}%")
+    
+    t_o,p_o = Earth_atmosphere_model(0)
+    e_o = water_vapour_pressure(t_o, 0, p_o)[1]
+    n_o = Apparent_elv(p_o, t_o, e_o)
+    
+    t_m,p_m = Earth_atmosphere_model(100)
+    e_m = water_vapour_pressure(t_m, 100, p_m)[1]
+    n_m = Apparent_elv(p_m, t_m, e_m)
+    
+    ratio = ((6372*n_o)/(6471*n_m))
+    
+    for i in range(len(elv_rad)):
+        elv_rad[i] = np.arccos(ratio*np.cos(elv_rad[i]))
+        
+    
 
-
-    plt.figure(figsize=(14,10))
-    plt.plot(np.rad2deg(elv),A_g)
-    plt.yscale("log")
-    plt.ylim((0.1,100))
-    plt.xlim((-90,0))
-    plt.grid(True,"minor")
+    
+    fig1, (sub1, sub2) = plt.subplots(2,1, figsize=(10, 10))
+    sub1.plot(-np.rad2deg(elv_rad),A_g[0], label = "2.5",linestyle = '-')
+    sub1.plot(-np.rad2deg(elv_rad),A_g[1], label = "7.5",linestyle = "dashdot")
+    sub1.plot(-np.rad2deg(elv_rad),A_g[2], label = "12.5",linestyle = '--')
+    sub2.plot(elv_deg,A_g[0], label = "2.5",linestyle = '-')
+    sub2.plot(elv_deg,A_g[1], label = "7.5",linestyle = "dashdot")
+    sub2.plot(elv_deg,A_g[2], label = "12.5",linestyle = '--')
+    sub1.set_yscale("log")
+    sub2.set_yscale("log")
+    sub1.set_ylim(((0.001,1000)))
+    sub2.set_ylim(((0.001,1000)))
+    sub1.set_xlim(((-90,0)))
+    sub2.set_xlim(((-90,0)))
     plt.show()
+    
+    
+def elv_angle_test():
+    import numpy as np
+    import matplotlib.pyplot as plt
+    T_orig,P_tot_orig = Earth_atmosphere_model(0)
+    e_orig = water_vapour_pressure(T_orig, 0, 7.5)[1]
+    P_d_orig = P_tot_orig-e_orig
+    
+    n_orig= Apparent_elv(P_d_orig, T_orig, e_orig)
+    orig_term = (6371)*n_orig
+    h = np.linspace(1,100,1000)
+    thi =[]
+    for i in range(len(h)):
+        T,P = Earth_atmosphere_model(h[i])
+        ro,e = water_vapour_pressure(T, h[i], 7.5)
+        nq = Apparent_elv(P, T, e)
+        now_term = (6371+h[i])*nq
+        thi.append(np.rad2deg(np.arccos((orig_term/now_term)*np.cos(np.deg2rad(-90)))))
+    plt.figure()
+    plt.plot(h,thi)
+    print(np.trapz(thi,h))
+    #   
+        
+    
    
 if __name__ == "__main__":
-    Zenith_attenuation_test()
+    Total_atmos_atten_test()
     # x = input("input ")
     # if x == "1":    
     #     Zenith_attenuation_test()

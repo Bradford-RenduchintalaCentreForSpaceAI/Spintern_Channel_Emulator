@@ -379,26 +379,19 @@ def Zenith_attenuation_test():
     plt.ylim((10**(-3), 10**(2)))
     plt.grid(True,"minor")
     plt.show()
-
 def Apparent_elv(P,T,e):
     #from TU-R P.45
     N = (77.6*(P/T))-(5.6*(e/T))+((3.75E5)*(e/T**2))
     return 1+N*1E-7
 
-def Total_atmos_atten_earth_space(Height_of_ground,Height_of_sat,elv,f,wvd,space_to_earth):
+def Total_atmos_atten(Height_of_ground,Height_of_sat,elv,f,wvd):
     import numpy as np
+    # elv = elv+np.deg2rad(9)
     H_s = Height_of_sat
     H_g = Height_of_ground
-    if space_to_earth == True:
-        q = -1
-        h = -np.linspace(-H_s,-H_g,100)
-    else:
-        q = 1
-        h = np.linspace(H_g,H_s,100)
-    
-    
-    A_g_h = [];elv_array= []
-    
+    A_g_h = [];n = [];elv_array= []
+    h = -np.linspace(-H_s,-H_g,100)
+    print(h)
     T_orig,P_tot_orig = Earth_atmosphere_model(H_g)
     e_orig = water_vapour_pressure(T_orig, H_g, wvd)[1]
     P_d_orig = P_tot_orig-e_orig
@@ -409,6 +402,7 @@ def Total_atmos_atten_earth_space(Height_of_ground,Height_of_sat,elv,f,wvd,space
     for i in range(len(h)):
         T,P = Earth_atmosphere_model(h[i])
         ro,e = water_vapour_pressure(T, h[i], wvd)
+        P_d = P-e
         nq = Apparent_elv(P, T, e) 
         now_term = (6371+h[i])*nq
         cos_elv_apparent = (orig_term/now_term)*np.cos(elv)
@@ -418,119 +412,69 @@ def Total_atmos_atten_earth_space(Height_of_ground,Height_of_sat,elv,f,wvd,space
         A_g_h.append(gamma/term_1)
        
     A_g = np.trapz(A_g_h,x = h)
-    return q*A_g
+    return -A_g
    
-def Total_atmos_atten_space_earth(Height_of_ground,Height_of_sat,elv,f,wvd):
-    import numpy as np
-    H_s = Height_of_sat
-    H_g = Height_of_ground
-    R_e = 6378.1
-    r_e = R_e+H_s
-    
-    if H_s>=100:
-        H_s1 = 100
-    else:
-        H_s1 = H_s
-        
-    
-    T_s,P_s = Earth_atmosphere_model(H_s1)
-    e_s = water_vapour_pressure(T_s, H_s1, wvd)[1]
-    n_s = Apparent_elv(P_s, T_s, e_s)
-    
-    
-    h = [];h_pointless = []
-    for i in range(922):
-        if i == 0:    
-            h_pointless.append(0.0001*np.exp(i/100))
-        else:
-            h_pointless.append(h_pointless[i-1] + 0.0001*np.exp(i/100))
-        
-        
-        if h_pointless[i]>=H_g:
-            h.append(h_pointless[i])
-    
-    
-    
-    H_g = min(h)
-    
-    H_s = max(h[:len(h)-1])
-    r_e = R_e+H_g
-    r_s = R_e+H_s
-    
-    
-    A_g = 0
-    for i in range(len(h)-1):
-        T_n,P_n = Earth_atmosphere_model(h[i])
-        e_n = water_vapour_pressure(T_n, h[i], wvd)[1]
-        n_n = Apparent_elv(P_n, T_n, e_n)
-        r_n_1 = R_e+h[i+1]
-        r_n = R_e +h[i]
-        
-        #ducting check
-        
-        duct_term = np.cos(elv)*((R_e+H_s)*n_s)/((R_e+h[i])*n_n)
-        
-        if duct_term >= 1:
-            A_g += 0
-            ducting = True
-        
-        else:    
-            cos_term = ((n_s/n_n)*r_s*np.cos(elv))**2
-            
-            term_1 = r_n_1**2
-            term_2 = r_n**2
-            
-            term_3 = np.sqrt(term_1-cos_term)
-            term_4 = np.sqrt(term_2-cos_term)
-            
-            lns = term_3 -term_4
-            
-            gamma = Gamma_const(f, T_n, P_n, e_n)
-            
-            
-            A_g += gamma*lns
-            
-    return A_g, ducting
-    
 def Total_atmos_atten_test():
     import matplotlib.pyplot as plt
+    import os
     Height_of_sat = 100
     Height_of_ground = 1
     f = 30
-    step = 50
-    elv_earth = np.linspace(0,np.pi/2,step)
-    elv_space = np.linspace(-np.pi/2,np.deg2rad(-9.946),step)
-    A_g_1 = {"12.5":[],"7.5":[],"2.5":[]}
-    A_g_2 = {"12.5":[],"7.5":[],"2.5":[]}
-    for i in range(len(elv_earth)):
-        A_g_1["12.5"].append(Total_atmos_atten_earth_space(Height_of_ground, Height_of_sat, elv_earth[i], f, 12.5,False))
-        A_g_1["7.5"].append(Total_atmos_atten_earth_space(Height_of_ground, Height_of_sat, elv_earth[i], f, 7.5,False))
-        A_g_1["2.5"].append(Total_atmos_atten_earth_space(Height_of_ground, Height_of_sat, elv_earth[i], f, 2.5,False))
+    elv_rad = np.linspace(-np.pi/2,np.pi/2,50)
+    elv_deg = np.rad2deg(elv_rad)
+    A_g = [[],[],[]]
+    
+    for i in range(len(elv_rad)):
+        A_g[0].append(Total_atmos_atten(Height_of_ground, Height_of_sat, elv_rad[i], f,2.5))
+        A_g[1].append(Total_atmos_atten(Height_of_ground, Height_of_sat, elv_rad[i], f,7.5))
+        A_g[2].append(Total_atmos_atten(Height_of_ground, Height_of_sat, elv_rad[i], f,12.5))
+        print(f"{(i/len(elv_rad))*100}%")
+    
+    t_o,p_o = Earth_atmosphere_model(0)
+    e_o = water_vapour_pressure(t_o, 0, p_o)[1]
+    n_o = Apparent_elv(p_o, t_o, e_o)
+    
+    t_m,p_m = Earth_atmosphere_model(100)
+    e_m = water_vapour_pressure(t_m, 100, p_m)[1]
+    n_m = Apparent_elv(p_m, t_m, e_m)
+    
+    ratio = ((6372*n_o)/(6471*n_m))
+    
+    for i in range(len(elv_rad)):
+        elv_rad[i] = np.arccos(ratio*np.cos(elv_rad[i]))
         
-        A_g_2["12.5"].append(Total_atmos_atten_space_earth(Height_of_ground,Height_of_sat,elv_space[i],f,12.5)[0])
-        A_g_2["7.5"].append(Total_atmos_atten_space_earth(Height_of_ground,Height_of_sat,elv_space[i],f,7.5)[0])
-        A_g_2["2.5"].append(Total_atmos_atten_space_earth(Height_of_ground,Height_of_sat,elv_space[i],f,2.5)[0])
-        print(f"{((i+1)/len(elv_earth))*100}%")
+    
+
     
     fig1, (sub1, sub2) = plt.subplots(2,1, figsize=(10, 10))
-    sub1.plot(np.rad2deg(elv_earth),A_g_1["2.5"], label = "2.5",linestyle = '-')
-    sub1.plot(np.rad2deg(elv_earth),A_g_1["7.5"], label = "7.5",linestyle = "dashdot")
-    sub1.plot(np.rad2deg(elv_earth),A_g_1["12.5"], label = "12.5",linestyle = '--')
-    sub2.plot(np.rad2deg(elv_space),A_g_2["2.5"], label = "2.5",linestyle = '-')
-    sub2.plot(np.rad2deg(elv_space),A_g_2["7.5"], label = "7.5",linestyle = "dashdot")
-    sub2.plot(np.rad2deg(elv_space),A_g_2["12.5"], label = "12.5",linestyle = '--')
-    sub1.set_title("Earth-Space path")
-    sub2.set_title("space-Earth path")
+    sub1.plot(-np.rad2deg(elv_rad),A_g[0], label = "2.5",linestyle = '-')
+    sub1.plot(-np.rad2deg(elv_rad),A_g[1], label = "7.5",linestyle = "dashdot")
+    sub1.plot(-np.rad2deg(elv_rad),A_g[2], label = "12.5",linestyle = '--')
+    sub2.plot(elv_deg,A_g[0], label = "2.5",linestyle = '-')
+    sub2.plot(elv_deg,A_g[1], label = "7.5",linestyle = "dashdot")
+    sub2.plot(elv_deg,A_g[2], label = "12.5",linestyle = '--')
     sub1.set_yscale("log")
     sub2.set_yscale("log")
-    sub1.legend()
-    sub2.legend()
-    sub1.set_ylim(((0.1,100)))
-    sub2.set_ylim(((0.1,100)))
-    sub1.set_xlim(((-10,90)))
-    sub2.set_xlim(((-90,0)))
+    sub1.set_ylim(((0.001,1000)))
+    sub2.set_ylim(((0.001,1000)))
+    # sub1.set_xlim(((-90,0)))
+    # sub2.set_xlim(((-90,0)))
     plt.show()
 
+def Total_atmos_atten_test1():
+     import matplotlib.pyplot as plt
+     import os
+     Height_of_sat = 100
+     Height_of_ground = 1
+     f = 30
+     start_elv = np.pi/2
+     end_elv = np.rad2deg(-10)
+     elv = np.linspace(bhv)
+     
+     
+     x = Total_atmos_atten(Height_of_ground, Height_of_sat, elv, f, 7.5)
+     
+     print(x)
 def elv_angle_test():
     import numpy as np
     import matplotlib.pyplot as plt
@@ -550,9 +494,15 @@ def elv_angle_test():
         thi.append(np.rad2deg(np.arccos((orig_term/now_term)*np.cos(np.deg2rad(-90)))))
     plt.figure()
     plt.plot(h,thi)
-    print(np.trapz(thi,h)) 
+    print(np.trapz(thi,h))
+    #   
         
     
    
 if __name__ == "__main__":
-    Total_atmos_atten_test()
+    Total_atmos_atten_test1()
+    # x = input("input ")
+    # if x == "1":    
+    #     Zenith_attenuation_test()
+    # else:
+    #     Total_atmos_atten_test()

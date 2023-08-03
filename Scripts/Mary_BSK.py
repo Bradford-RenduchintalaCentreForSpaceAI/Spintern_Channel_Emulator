@@ -24,7 +24,7 @@ def Int_generator(bits,Levels):
 
 
 
-def MPSK_Generator(bits,t,L,f):
+def MPSK_Generator(bits,t,L,f,A):
     theta = [(2*np.pi*n)/(2**L) for n in range(0,2**L)]
 
     t_per_bit = int(len(t)/len(bits))
@@ -39,7 +39,7 @@ def MPSK_Generator(bits,t,L,f):
             i1_mapped.append(i1_mapped[len(i1_mapped)-1])
     s = []      
     for i in range(len(t)):
-        s.append(np.exp(-1j*np.pi*t[i]*f+1j*theta[i1_mapped[i]]))
+        s.append(A*np.exp(-1j*np.pi*t[i]*f+1j*theta[i1_mapped[i]]))
         #print(theta[i1_mapped[i]])
             
     
@@ -51,7 +51,7 @@ def MPSK_Generator(bits,t,L,f):
 def test():
     from Constalation_in_python import Constallation_phase
     N = 60
-
+    A = 4
     f = 2
 
     levels = 2
@@ -69,11 +69,11 @@ def test():
     
     ints = Int_generator(bits,levels)
     
-    i1_mapped,s = MPSK_Generator(ints, t,levels,f)
+    i1_mapped,s = MPSK_Generator(ints, t,levels,f,A)
     
 
     
-    c = np.exp(-1j*np.pi*t*f)
+    c = A*np.exp(-1j*np.pi*t*f)
     
     [real_part, phase_part] = Constallation_phase(c, s)
     
@@ -98,7 +98,6 @@ def test():
     sub3.grid(True)
     sub4.grid(True)
     sub4.set_xlim((-4,4))
-    sub4.set_ylim((-4,4))
     fig1.subplots_adjust(hspace=0.2)
     plt.show()
     

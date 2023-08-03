@@ -11,13 +11,6 @@ def Constallation_phase(carrier,signal):
     phase_part = (np.arctan2(np.imag(carrier),np.real(carrier)) - np.arctan2(np.imag(signal),np.real(signal)))
     
     
-    
-    term_1 = np.arctan2(np.imag(signal),np.real(signal))
-    
-    term_2 = np.arctan2(np.imag(carrier),np.real(carrier))
-    
-    print(term_2-term_1)
-    
     return [real_part*np.cos(phase_part),real_part*np.sin(phase_part)]           
            
      

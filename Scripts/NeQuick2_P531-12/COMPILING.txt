@@ -1,0 +1,38 @@
+===============================
+COMPILING.txt:
+Purpose: to provide directives on NeQuick2 P.531 compilation.
+
+NeQuick2 P.531 source code may be compiled with any Fortran 77 compiler in any platform. 
+
+Besides the model itself, there are several test drivers available.
+For more information on the model and the drivers, check Readme.txt and folder Documentation.
+
+To run the NeQuick2 create the executable file, by compiling and linking the source files 
+NeQuick_2.for and slQu_2.for with a FORTRAN 77 compiler. 
+Under a Unix environment, the command has the following format:
+	compiler [-o outputfile] NeQuick_2_1.for slQu_2_1.for
+
+For example, to create the neq2 executable file (using the f77 compiler) from the command line type:
+	f77 -o neq2 NeQuick_2_1.for slQu_2_1.for
+
+===============================
+Makefile
+
+For convenience, a Makefile has been provided for compilation with different standard compilers 
+(g77, gcc, f77). 
+
+To select the compiler, change the variable COMMAND in the Makefile. Then change the options 
+for such compiler in the file rules_$(COMMAND).make where $(COMMAND) is the reference to the 
+compiler (e.g., rules_gcc.make).
+
+The compilation has been succesfully testec in the following platforms:
+* gcc/2.95.3, Unix (SunOS 5.8)
+* f77 v5.3 from Sun Workshop 6, Unix (SunOS 5.8)
+* g77-2.95, Linux (Debian GNU/Linux3.0)
+* g77 v0.5.25, Windows XP 
+
+Be aware of data filenames case conventions (ccir**.asc, modip.asc and R12.dat) and also of the 
+type of ascii representation (unix, dos, mac) for the line feed/carriage return depending on the platform. 
+Conversions may be done with unix2dos, dos2unix commands or with emacs editor 
+(directive set-buffer-file-eol-type).
+

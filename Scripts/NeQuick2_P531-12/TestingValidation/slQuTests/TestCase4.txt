@@ -1,0 +1,40 @@
+=========================================================================
+> > Input < <
+=========================================================================
+
+
+ INPUT: Ray endpoint 1: latitude (deg N), longitude (deg E), height (km)
+0,0,50
+ INPUT: Ray endpoint 2: latitude (deg N), longitude (deg E), height (km)
+0,0,8000
+ Input: year, month, UT:
+1930,5,5
+ error in year (valid: 1931-2049 or 0-49 for 2000-2049
+    or 50-99 for 1950-1999)
+ Repeat
+ Input: year, month, UT:
+1960,5,5
+ User input R12/F10.7 for this year and month? (y/n)
+n
+ List electron density profile along ray (y/n)?
+n
+ Output in slQu.dat 
+
+
+=========================================================================
+> > Output < <
+=========================================================================
+
+
+Ray endpoint 1: lat. (deg. N), long. (deg. E), height (km)
+    0.00    0.00    50.00
+Ray endpoint 2: lat. (deg. N), long. (deg. E), height (km)
+    0.00    0.00  8000.00
+Year, S10.7, R12, month, UT: 1960, 161.1, 117.0,  5,  5.0
+
+Electron contents along ray.
+  (h1-h2) means from point in height h1 to point in height h2 (heights in km)
+Electron contents (  50-1000),(1000-2000),(2000- 8000),(  50- 8000)
+                       90.15        5.66        4.74      100.56   x10^15 m^-2
+
+

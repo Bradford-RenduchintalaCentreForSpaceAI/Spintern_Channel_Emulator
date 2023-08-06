@@ -1,0 +1,35 @@
+===============================
+TESTING_VALIDATION.txt:
+Purpose: Examples of usage of the NeQuick2 P.531 drivers are available. They are described below.
+
+
+===============================
+> > Sample test: <  <
+===============================
+Sample tests for slQu driver are provided in:
+	Input: TestingValidation/slQuTests/input_NeQ2.txt
+	Output: TestingValidation/slQuTests/output_NeQ2.txt
+
+
+
+===============================
+> > Validation example: <  <
+===============================
+Validation input - output files are provided in order to test correct functioning and/or alternative 
+implementations of the model. 
+
+Validation test cases are run using the NeQVal driver, together with the 
+run_validation_tests.sh script and the reference input datasets.
+
+The validation input reference data is available at TestingValidaton/validation/in/
+
+The validation output reference data is available at TestingValidaton/validation/out_ref/
+
+The run_validation_tests.sh script is written in bash shell scripting language for linux/unix platforms. 
+The script calls the NeQVal driver for each of the input data files from the reference input folder.
+Equivalent scripts may be written for other platforms.
+
+The run_validation_tests.sh saves the generated data at TestingValidaton/validation/out/
+The validation excercise results in those files equal to the output reference files.
+
+The format of the validation data files is provided in TestingValidaton/Validation/README.txt

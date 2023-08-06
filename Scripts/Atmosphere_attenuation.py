@@ -1,133 +1,33 @@
 import numpy as np
-
-def Rain_attenuation(lat,elv_angle,h_s,R_zero,f,Pol_tilt,p):
-    #Step 1
-   
-    h_r = 4-0.0075*(lat-36)
-   
-    #Step 2
-    elv_angle = (elv_angle*np.pi)/180
-    lat_of_earth_stat = (lat*np.pi)/180
-   
-    if elv_angle < (5*np.pi)/180:
-        L_s = ((2*(h_r-h_s))/(np.sqrt(np.sin(elv_angle)**2+(2*(h_r-h_s)/8500*10**3))+np.sin(elv_angle)))
-    else:
-        L_s = (h_r-h_s)/np.sin(elv_angle)
-       
-    # Step 3
-    L_g = L_s*np.sin(elv_angle)
-   
-   
-    #Step 4
-   
-    # Coeffiecients for line fitting
-    k_h_coef = [[-5.3398,-0.35351,-0.23789,-0.94158],[-0.10008,1.26970, 0.86036,0.64552],[1.13098,0.45400,0.15354
-                                                                                      ,0.16817],-0.18961,0.71147]
-    k_v_coef = [[-3.80595,-3.44965,-0.39902,0.50167],[0.56934,-0.22911,0.73042,1.07319],[0.81061,0.51059,0.11899,0.27195],-0.16398,0.63297]
-   
-    a_h_coef = [[-0.14318,0.29591,0.32177,-5.37610,16.1721],[1.82442,0.77564,0.63773,-0.96230,-3.29980],[-0.55187
-                                                                                           ,0.19822,0.13164,1.47828,3.43990],0.67849,-1.95537]
-    a_v_coef = [[-0.07771,0.56727,-0.20238,-48.2991,48.5833],[2.33840,0.95545,1.14520,0.791669,0.791459],[-0.76284,0.54039,0.26809,0.116226,0.116479],-0.053739,0.83433]
-   
-    # K_h Caculation
-   
-    log_k_h = 0.0
-    for j in range(4):
-        term = k_h_coef[0][j] * np.exp(-((np.log10(f) - k_h_coef[1][j]) / k_h_coef[2][j]) ** 2)
-        log_k_h += term
-    log_k_h += k_h_coef[3] * np.log10(f) +k_h_coef[4]
-   
-    # K_v Caculation
-   
-    log_k_v = 0.0
-    for j in range(4):
-        term = k_v_coef[0][j] * np.exp(-((np.log10(f) - k_v_coef[1][j]) / k_v_coef[2][j]) ** 2)
-        log_k_v += term
-    log_k_v += k_v_coef[3] * np.log10(f) +k_v_coef[4]
-   
-    #a_h calc
-   
-    a_h = 0.0
-   
-    for j in range(5):
-        term = a_h_coef[0][j] * np.exp(-((np.log10(f) - a_h_coef[1][j]) / a_h_coef[2][j]) ** 2)
-        a_h += term
-    a_h += a_h_coef[3] * np.log10(f) +a_h_coef[4]
-   
-    #a_h calc
-
-    a_v = 0.0
-   
-    for j in range(5):
-        term = a_v_coef[0][j] * np.exp(-((np.log10(f) - a_v_coef[1][j]) / a_v_coef[2][j]) ** 2)
-        a_v += term
-    a_v += a_v_coef[3] * np.log10(f) +a_v_coef[4]
-   
-    #Convert log values
-    k_h = 10**(log_k_h)
-    k_v = 10**(log_k_v)
-   
-    k = (k_h+k_v+(k_h-k_v)*(np.cos(elv_angle)**2)*np.cos(2*Pol_tilt))/2
-    a = (k_h*a_h+k_v*a_v+(k_h*a_h-k_v*a_v)*(np.cos(elv_angle)**2)*np.cos(2*Pol_tilt))/2
-   
-    #Step 5
-   
-    Gamma_r = k*(R_zero)**a
-   
-   
-    #Step 6
-   
-    Hoz_reduction_factor = 1/(1+0.78*np.sqrt((L_g*Gamma_r)/f)-0.38*(1-np.exp(-2*L_g)))
-   
-    #Step 7
-   
-    zeta = np.arctan((h_r-h_s)/(L_g*Hoz_reduction_factor))
-   
-    if zeta>elv_angle:
-        L_r = (L_g*Hoz_reduction_factor)/(np.cos(elv_angle))
-    else:
-        L_r = (h_r-h_s)/(np.sin(elv_angle))
-   
-    if np.abs(lat_of_earth_stat) < (36*np.pi)/180:
-        pearson = ((36*np.pi)/180)-np.abs(lat_of_earth_stat)
-    else:
-        pearson = 0
-   
-    print((L_r*Gamma_r)/f**2)
-   
-    term = (31*(1-np.exp(-(elv_angle)/(1+pearson))*(np.sqrt(L_r*Gamma_r)/f**2)-0.45))
-    vert_adjust_ang = 1/(1+np.sqrt(np.sin(elv_angle))*(term))
-   
-   
-    #Step 8
-    L_e = L_r*vert_adjust_ang
-   
-    #Step 9
-    A_zero = Gamma_r*L_e
-   
-    #Step 10
-   
-    if p>=1 or np.abs(lat_of_earth_stat)>= (36*np.pi)/180:
-        beta = 0
-    elif p<1 and np.abs(lat_of_earth_stat) < (36*np.pi)/180 and np.abs(elv_angle)>= (25*np.pi)/180:
-        beta = -0.005*(np.abs(lat_of_earth_stat)-36)
-    else:
-        beta = -0.005*(np.abs(lat_of_earth_stat)-36)+1.8-4.25*np.sin(elv_angle)
-   
-    term = -(0.655+0.033*np.log(p)-0.045*np.log(A_zero)-beta*(1-p)*np.sin(elv_angle))
-   
-    A_p = A_zero*(p/0.01)**term
-   
-    return A_p
-       
+    
 def Gamma_const(f,t,pressure,e):
+    """
+    
+
+    Parameters
+    ----------
+    f : float
+        Frequency in GHZ.
+    t : float
+        Temp in kelvin.
+    pressure : f,loat
+        Dry air pressure in hPA.
+    e : float
+        water vapour pressure hPa.
+
+    Returns
+    -------
+    float
+        Specific gaseous attenuation in dB/Km.
+
+    """
     import numpy as np
-    # From ITU P.676-5 Annex 2
-    T = t
+    # From ITU P.676-13
     theta = 300/(t)
-   
-   
     p = pressure-e
+    
+    
+    """Table 1"""
     f_o_o = [50.474214, 50.987745, 51.50336, 52.021429, 52.542418, 53.066934, 53.595775, 54.130025, 54.67118, 55.221384,
              55.783815, 56.264774, 56.363399, 56.968211, 57.612486, 58.323877, 58.446588, 59.164204, 59.590983,
              60.306056, 60.434778, 61.150562, 61.800158, 62.41122, 62.486253, 62.997984, 63.568526, 64.127775,
@@ -159,7 +59,7 @@ def Gamma_const(f,t,pressure,e):
    
    
    
-   
+    """Table 2"""
     f_o_w = [22.23508, 67.80396, 119.99594, 183.310087, 321.22563, 325.152888, 336.227764, 380.197353, 390.134508,
              437.346667, 439.150807, 443.018343, 448.001085, 470.888999, 474.689092, 488.490108, 503.568532,
              504.482692, 547.67644, 552.02096, 556.935985, 620.700807, 645.766085, 658.00528, 752.033113, 841.051732,
@@ -187,7 +87,7 @@ def Gamma_const(f,t,pressure,e):
     b_6 = [1.0, 0.82, 0.79, 0.85, 0.54, 0.74, 0.61, 0.89, 0.55, 0.48, 0.52, 0.5, 0.67, 0.65, 0.64, 0.72, 0.43, 0.45,
            1.0, 1.0, 1.0, 0.68, 0.5, 1.0, 0.84, 0.45, 0.84, 0.9, 0.95, 0.53, 0.78, 0.8, 0.67, 0.9, 5.0]
 
-    d= (5.6E-4)*(p+e)*(theta**0.8)
+    d= (5.6E-4)*(p+e)*(theta**0.8) #Eq 9
    
    
    
@@ -196,24 +96,24 @@ def Gamma_const(f,t,pressure,e):
     term_3 = 1+((1.9E-5)*f**1.5)
    
    
-    N_d_dash = f*p*(theta**2)*(((6.14E-5)/term_1)+(term_2/term_3))
+    N_d_dash = f*p*(theta**2)*(((6.14E-5)/term_1)+(term_2/term_3)) #Eq 9
    
     N_o = 0
     for i in range(len(f_o_o)):
         term_1 = (a_5[i]+(a_6[i]*theta))*1E-4
         term_2 = (p+e)*(theta**0.8)
-        delta_o = (term_1)*term_2
+        delta_o = (term_1)*term_2 #Eq 7
         term_1=term_2=0
         term_1 = p*theta**(0.8-a_4[i])
         term_2 = 1.1*e*theta
         delta_f_o = (a_3[i]*1E-4)*(term_1+term_2);term_1=term_2=0
-        delta_f_o = np.sqrt((delta_f_o**2)+(2.25E-6))
+        delta_f_o = np.sqrt((delta_f_o**2)+(2.25E-6)) #Eq 6a
         term_1 = (delta_f_o-(delta_o*(f_o_o[i]-f)))
         term_2 = ((f_o_o[i]-f)**2)+(delta_f_o**2)
         term_3 = (delta_f_o-(delta_o*(f_o_o[i]+f)))
         term_4 = ((f_o_o[i]+f)**2)+(delta_f_o**2)
-        F_i_o = (f/f_o_o[i])*((term_1/term_2)+(term_3/term_4))
-        S_i_o = ((a_1[i]*10**(-7))*p*(theta**3)*np.exp(a_2[i]*(1-theta)))
+        F_i_o = (f/f_o_o[i])*((term_1/term_2)+(term_3/term_4)) #Eq 5
+        S_i_o = ((a_1[i]*10**(-7))*p*(theta**3)*np.exp(a_2[i]*(1-theta))) #Eq 3
         N_o += (S_i_o*F_i_o)
        
    
@@ -224,7 +124,7 @@ def Gamma_const(f,t,pressure,e):
         term_1 = b_3[i]*1E-4
         term_2 = (p*(theta**(b_4[i])))
         term_3 = (b_5[i]*e*theta**(b_6[i]))
-        delta_f_w = term_1*(term_2+term_3);term_1=term_2=term_3= 0
+        delta_f_w = term_1*(term_2+term_3);term_1=term_2=term_3= 0 #Eq 5
         term_1 = 0.535*delta_f_w
         term_2 = 0.217*(delta_f_w**2)
         term_3 = ((2.1316E-12)*(f_o_w[i]**2))/(theta);term_1=term_2=term_3= 0
@@ -232,11 +132,11 @@ def Gamma_const(f,t,pressure,e):
         term_2 = ((f_o_w[i]-f)**2)+(delta_f_o**2)
         term_3 = (delta_f_w)
         term_4 = ((f_o_w[i]+f)**2)+(delta_f_w**2)
-        F_i_w = (f/f_o_w[i])*((term_1/term_2)+(term_3/term_4))
+        F_i_w = (f/f_o_w[i])*((term_1/term_2)+(term_3/term_4)) #Eq 5
         term_1 = b_1[i]*1E-1
         term_2 = e*(theta**3.5)
         term_3 = np.exp(b_2[i]*(1-theta))
-        S_i_w = term_1*term_2*term_3
+        S_i_w = term_1*term_2*term_3 #Eq 3
         N_w += S_i_w*F_i_w
    
     return (N_w+N_o)*0.1820*f
@@ -264,100 +164,12 @@ def Gamma_w_o_test():
     plt.ylim((10E-4,10E5))
     plt.xlim((0,1000))
     plt.show()
-       
-def Earth_atmosphere_model(h):
-    #from ITU P.835-6
-    import numpy as np
-    h = (6356.766*h)/(6356.766+h)
-    a_o = 95.571899
-    a_1 = -4.011801
-    a_2 = 6.424731E-2
-    a_3 = -4.789660E-4
-    a_4 = 1.340543E-6
-   
-   
-    if h < 11:
-        T = 288.15-6.5*h
-        p = 1013.25*((288.15)/(288.15-6.5*h))**(-34.1632/6.5)
-       
-    if h >11 and h<=20:
-        T = 216.65
-        p = 226.3226*np.exp(-34.1632*(h-11)/216.65)
-       
-    if h >20 and h<=32:
-        T = 216.65+(h-20)
-        p = 54.74980*((216.65)/(216.65+(h-20)))**(34.1632)
-       
-    if h>32 and h<=47:
-        T = 228.65+2.8*(h-32)
-        p = 8.680422*((216.65)/(216.65+(h-20)))**(34.1632/2.8)
-       
-    if h > 47 and h <= 51:
-        T = 270.65-2.8*(h-51)
-        p = 1.109106*np.exp(-34.1632*(h-47)/270.65)
-       
-    if h>51 and h <=71:
-        T = 270.65 - 2.8*(h-51)
-        p = 0.6694167*((270.65)/(270.65-2.8*(h-51)))**(-34.1632/2.8)
-       
-    if h>71 and h<=84.852:
-        T = 214.65-2*(h-71)
-        p = 0.03956649*((214.65)/((214.65-2.0*(h-71))))**(-34.1632/2.0)
-    if h>84.852 and h<=86:
-        T = 186.8673
-        p = np.exp(a_o+(a_1*h)+(a_2*h**2)+(a_3*h**3)+(a_4*h**4))
-       
-    if h>86 and h<=91:
-        T = 186.8673
-        p = np.exp(a_o+(a_1*h)+(a_2*h**2)+(a_3*h**3)+(a_4*h**4))
-       
-    if h>91 and h<=100:
-        T = 263.1905-76.3232*(1-((h-91)/(19.9429))**2)**0.5
-        p = np.exp(a_o+(a_1*h)+(a_2*h**2)+(a_3*h**3)+(a_4*h**4))
-       
-    if h>100:
-        raise(ValueError("Alltitude too high"))
-   
-    return T,p #T(k) #p(hPa)
-       
-def Earth_atmosphere_model_test():
-    import matplotlib.pyplot as plt
-    import numpy as np
-   
-    h = np.linspace(10,99,100)
-   
-    T = []
-    p = []
-
-    for i in range(len(h)):
-        T_h, p_h = Earth_atmosphere_model(i)
-        T.append(T_h)
-        p.append(p_h)
-   
-   
-    fig1, (sub1, sub2) = plt.subplots(2,1, figsize=(10, 10))
-   
-    sub1.plot(T,h)
-    sub2.plot(p,h)
-    sub1.grid(True);sub2.grid(True,"minor")
-    sub2.set_xscale("log")
-    sub2.set_xlabel("pressure")
-    sub1.set_xlabel("tempreture")
-    sub1.set_ylabel("Height")
-    sub2.set_ylabel("Height")
-
-def water_vapour_pressure(T,h,p_o):
-    #from ITU-R P.835-6
-    import numpy as np
-    ro = p_o*np.exp(-h/2) #g/m^3
-   
-    e = (ro*T)/216.7 #hPa
-   
-    return e,ro
-   
+  
 def Zenith_attenuation_test():
     import numpy as np
     import matplotlib.pyplot as plt
+    from Earth_atmospher import Earth_atmosphere_model, water_vapour_pressure
+   
     f = np.arange(50,70,0.01)
     h = np.linspace(0,20,5)
     print("Start")
@@ -381,20 +193,58 @@ def Zenith_attenuation_test():
     plt.show()
 
 def Apparent_elv(P,T,e):
-    #from TU-R P.45
+    """
+    
+
+    Parameters
+    ----------
+    P : float
+        Dry air pressure.
+    T : float
+        Tempreture in Kelvin.
+    e : float
+        Water vapour pressure in hPA.
+
+    Returns
+    -------
+    TYPE
+        DESCRIPTION.
+
+    """
+    #from TU-R P.453-14
     N = (77.6*(P/T))-(5.6*(e/T))+((3.75E5)*(e/T**2))
     return 1+N*1E-7
 
 def Total_atmos_atten_earth_space(Height_of_ground,Height_of_sat,elv,f,wvd,space_to_earth):
+    """
+    
+
+    Parameters
+    ----------
+    Height_of_ground : flat
+        Height of ground station in Km.
+    Height_of_sat : float
+        Height of space station in Km.
+    elv : float
+        Elevation of satallite in rad.
+    f : float
+        Frequency in Ghz.
+    wvd : float
+        water vapour pressure at ground level hPA.
+
+
+    Returns
+    -------
+    float
+        Attenuation in dB.
+
+    """
     import numpy as np
+    from Earth_atmospher import Earth_atmosphere_model, water_vapour_pressure
+   
     H_s = Height_of_sat
     H_g = Height_of_ground
-    if space_to_earth == True:
-        q = -1
-        h = -np.linspace(-H_s,-H_g,100)
-    else:
-        q = 1
-        h = np.linspace(H_g,H_s,100)
+    h = np.linspace(H_g,H_s,100)
     
     
     A_g_h = [];elv_array= []
@@ -418,14 +268,41 @@ def Total_atmos_atten_earth_space(Height_of_ground,Height_of_sat,elv,f,wvd,space
         A_g_h.append(gamma/term_1)
        
     A_g = np.trapz(A_g_h,x = h)
-    return q*A_g
+    return A_g
    
 def Total_atmos_atten_space_earth(Height_of_ground,Height_of_sat,elv,f,wvd):
+    """
+    
+
+    Parameters
+    ----------
+    Height_of_ground : flat
+        Height of ground station in Km.
+    Height_of_sat : float
+        Height of space station in Km.
+    elv : float
+        Elevation of satallite in rad.
+    f : float
+        Frequency in Ghz.
+    wvd : float
+        water vapour pressure at ground level hPA.
+
+
+    Returns
+    -------
+    A_g: float
+        Attenuation in dB.
+    ducting : bool
+        Boolean saying if ducting is occouring or not.
+
+    """
     import numpy as np
+    from Earth_atmospher import Earth_atmosphere_model, water_vapour_pressure
+   
     H_s = Height_of_sat
     H_g = Height_of_ground
     R_e = 6378.1
-    r_e = R_e+H_s
+    ducting = False
     
     if H_s>=100:
         H_s1 = 100
@@ -454,7 +331,6 @@ def Total_atmos_atten_space_earth(Height_of_ground,Height_of_sat,elv,f,wvd):
     H_g = min(h)
     
     H_s = max(h[:len(h)-1])
-    r_e = R_e+H_g
     r_s = R_e+H_s
     
     
@@ -532,6 +408,7 @@ def Total_atmos_atten_test():
     plt.show()
 
 def elv_angle_test():
+    from Earth_atmospher import Earth_atmosphere_model, water_vapour_pressure
     import numpy as np
     import matplotlib.pyplot as plt
     T_orig,P_tot_orig = Earth_atmosphere_model(0)

@@ -428,6 +428,15 @@ def elv_angle_test():
     plt.figure()
     plt.plot(h,thi)
     print(np.trapz(thi,h)) 
-          
+    
+
+def Free_space_loss(f,d):
+    import numpy as np
+    
+    return 92.45+np.log10(f*d)
+
+
+
+      
 if __name__ == "__main__":
     Total_atmos_atten_test()

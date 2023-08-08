@@ -71,9 +71,10 @@ def test():
     
     i1_mapped,s = MPSK_Generator(ints, t,levels,f,A)
     
-
-    
     c = A*np.exp(-1j*np.pi*t*f)
+    
+    
+    
     
     [real_part, phase_part] = Constallation_phase(c, s)
     

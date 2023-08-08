@@ -397,8 +397,8 @@ def test():
         line_1 = line_1_2[0:71]
         line_2 = line_1_2[71:]
     except:    
-        line_1 = "1 25544U 98067A   23200.04569411  .00013707  00000-0  24898-3 0  9999"
-        line_2 = '2 25544  51.6408 170.6667 0000390  75.0699   8.6204 15.49853169406738'
+        line_1 = "1 37846U 11060A   23216.79436601 -.00000089  00000+0  00000+0 0  9992"
+        line_2 = '2 37846  57.1053  10.1244 0002842  67.3316 292.6967  1.70475823 73395'
     sat = TLE_calc(line_1,line_2,False) # Initiate a sattellite using the TLE data provided 
     
     acc = 100000 # Set accuracy of computation to 100 see class TLE
@@ -408,7 +408,7 @@ def test():
     lat = 51.0643
     long = 0.8598
     d,Az, elv,q = sat.get_pos_TOPO(acc,lat,long,0) # Ground station at the location of Ham street Ashford Kent
-    
+    height = np.sqrt(q[0]**2+q[1]**2+q[2]**2)
     print(f"""
           Lattitude:{np.rad2deg(pos["lat"])}, Longitude:{np.rad2deg(pos["long"])}
           Pos in ECEF (xyz): {pos["x"], pos["y"], pos["z"]}

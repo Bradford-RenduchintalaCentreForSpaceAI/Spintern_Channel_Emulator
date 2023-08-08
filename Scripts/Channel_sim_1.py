@@ -1,96 +1,82 @@
-## Imports
-from Mary_ASK import Int_generator, Bit_generator, Generate_MASK, De_mod_MASK
-import numpy as np
+from TLE import TLE_calc
+from Doplar_shift import Get_orbital, Get_freq_change, Get_range_rate
+from Atmosphere_attenuation import Total_atmos_atten_space_earth, Free_space_loss
+from Mary_BSK import *
 import matplotlib.pyplot as plt
-import random
-import scipy as sci
-from Filters import Filters
-import time
-import Constalation_in_python
-
-# Basics Var declaration 
-
-N = 50
-
-f = 200
-
-Levels = 3
-
-step = 1/(3*(f*2*3.14))
-
-t = np.arange(0,1000,step)
-
-graph_scaling_factor = 10
+import numpy as np
 
 
-#AWGN Noise 
+"""Init Varibles"""
 
-def AWGN_Noise(s,ratio):
-    out_signal = []
-    for q in range(0,len(s)):
-        out_signal.append(s[q] + ratio*(random.gauss(mu=0.0, sigma=1.0)))
-    return out_signal
+TLE_line_1 = "1 37846U 11060A   23216.79436601 -.00000089  00000+0  00000+0 0  9992"
+TLE_line_2 = "2 37846  57.1053  10.1244 0002842  67.3316 292.6967  1.70475823 73395"
 
 
+home_lat = 51.0643
+home_long = 0.8598
 
+sat_data = Get_orbital(TLE_line_1, TLE_line_2, home_lat, home_long, 0, 0,stop_time_min=1)
 
+f_orig = 1E9
 
-# Transmitter 
+f_scaled = f_orig/1E9
+
+wvd = 2.5
+
+d = sat_data[3]
+
+N = 5
+
+end_point = 10
+
+A = 4
+
+step = (4*(f_scaled*2*3.14))
+
+t = np.linspace(0,end_point,end_point*int(step))
+
+c = A*np.exp(-1j*np.pi*2*t*f_scaled)
 
 bits = Bit_generator(N)
 
-ints = Int_generator(bits, Levels)
+ints = Int_generator(bits, 1)
 
-[ints_mapped, TxSignal] = Generate_MASK(N, f, ints, t, Levels,1/step)
+s = MPSK_Generator(ints, t, 1, f_scaled, A)
 
-
-# Channel 
-
-RxSignal = AWGN_Noise(TxSignal, 0.5)
-
-
-
-# Reciever 
-
-RxInt = De_mod_MASK(RxSignal, 1/step, f, t)
-
-
-RxIntSampled = []
-cnt = 0
-for i in range(len(t)):
-    if cnt == len(t)/100:
-        RxIntSampled.append(RxInt[i])
-        cnt = 0
-    cnt += 1
-        
-
-
-
-#Plots 
-fig1, (sub1, sub2,sub3,sub4) = plt.subplots(4,1, figsize=(10, 10))
-sub1.plot(t[:int(len(t)/graph_scaling_factor)], ints_mapped[:int(len(t)/graph_scaling_factor)])
-sub1.plot(t[:int(len(t)/graph_scaling_factor)], RxInt[:int(len(t)/graph_scaling_factor)], linestyle='--')
-fft1 = np.abs(sci.fft.fft(TxSignal))
-fft1 = fft1[:len(fft1)//2]
-fft2 = np.abs(sci.fft.fft(ints_mapped))
-fft2 = fft2[:len(fft2)//2]
-fft_freq = sci.fft.fftfreq(len(t),step)
-fft_freq = fft_freq[:len(fft_freq)//2]
-sub2.plot(fft_freq,fft2, linestyle = 'dotted')
-sub2.plot(fft_freq,fft1)
-sub2.set_xlim(0,f*4)
-sub2.set_ylim(0,10000)
-sub3.scatter(np.real(ints_mapped),np.imag(ints_mapped))
-sub4.scatter(np.real(RxIntSampled),np.imag(RxIntSampled))
-sub3.grid(True)
-sub4.grid(True)
-fig1.subplots_adjust(hspace=0.2)
-plt.show()
+"""Doppler stuff"""
+f_change = Get_freq_change(Get_range_rate(d))
+f = f_change
+for i in range(len(f_change)):
+    f[i] = f_change[i]*f_orig
+    f[i] = f[i]/1E9
+ 
+time = sat_data[4]
 
 
 
 
-# for i in range(len(t)):
-#     print(f"t:{t[i]} Ints:{ints_mapped[i]} RxInts:{RxInt[i]}")
-#     time.sleep(0.001)
+"""Atmosphere"""
+
+
+elv = sat_data[2]
+
+
+height_of_sat = sat_data[6]
+Ducting = False
+
+A_g = [];A_f = []
+
+""" Free space Loss"""
+
+for i in range(len(height_of_sat)):
+    A_f.append(Free_space_loss(f[i],d[i]))
+    
+
+
+plt.plot(t,s[1])
+plt.plot(t,s[0])
+
+
+
+
 

@@ -34,6 +34,32 @@ def Scintilate(Type,t,s):
 
 
 
+def Get_data():
+    import os
+    import subprocess
+    import time
+    os.system("C:/Users/bearb/OneDrive/Desktop/Uni_stuff/Year_2/Spinternship/Spintern_Channel_Emulator/Scripts/NeQuick2_P531-12/neq2.exe")
+    
+    
+    # prog = subprocess.run(["C:/Users/bearb/OneDrive/Desktop/Uni_stuff/Year_2/Spinternship/Spintern_Channel_Emulator/Scripts/NeQuick2_P531-12/neq2.exe"]
+    #                       , capture_output= True,input="45,45,1000 \n 45,45,20 \n", encoding="utf8")
+    # print(prog.stdout)
+    
+    
+    prog = subprocess.Popen(["C:/Users/bearb/OneDrive/Desktop/Uni_stuff/Year_2/Spinternship/Spintern_Channel_Emulator/Scripts/NeQuick2_P531-12/neq2.exe"],
+                            stdout=subprocess.PIPEm, shell = False)
+    prog.wait()
+    prog.communicate()
+    
+    
+    
+    # time.sleep(1)
+    # print(prog.poll())
+    
+    
+    
+    
+    
 def Scinillilation_test():
     from Constalation_in_python import Constallation_phase
     A = 1
@@ -75,4 +101,4 @@ def Scinillilation_test():
     
     
 if __name__ == "__main__":
-    Scinillilation_test()
+    Get_data()

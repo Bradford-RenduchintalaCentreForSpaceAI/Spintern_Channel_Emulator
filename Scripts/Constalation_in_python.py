@@ -5,7 +5,10 @@ import numpy as np
 
  
 def Constallation_phase(carrier,signal):
+    import numpy as np
     
+    carrier = np.array(carrier)
+    signal = np.array(signal)
     real_part = (np.sqrt((np.real(carrier-signal)**2)+(np.imag(carrier-signal)**2)))
 
     phase_part = (np.arctan2(np.imag(carrier),np.real(carrier)) - np.arctan2(np.imag(signal),np.real(signal)))

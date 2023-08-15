@@ -1,0 +1,10 @@
+Ray endpoint 1: lat. (deg. N), long. (deg. E), height (km)
+   43.00   43.00     1.00
+Ray endpoint 2: lat. (deg. N), long. (deg. E), height (km)
+   43.00   43.00   100.00
+Year, S10.7, R12, month, UT: 2023,  71.6,  10.7,  6, 20.0
+
+Electron contents along ray.
+  (h1-h2) means from point in height h1 to point in height h2 (heights in km)
+Electron content (   1- 100)
+                        0.01   x10^15 m^-2

@@ -25,6 +25,28 @@ def Int_generator(bits,Levels):
 
 
 def MPSK_Generator(bits,t,L,f,A):
+    """
+    
+
+    Parameters
+    ----------
+    bits : int
+        Number of bits.
+    t : list
+        time array.
+    L : int
+        Levels.
+    f : float
+        freq.
+    A : int
+        amplitude.
+
+    Returns
+    -------
+    list
+        [i1_mapped, s, c] or the integers mapped, the signal and the carrier.
+
+    """
     theta = [(2*np.pi*n)/(2**L) for n in range(0,2**L)]
 
     t_per_bit = int(len(t)/len(bits))
@@ -37,21 +59,22 @@ def MPSK_Generator(bits,t,L,f,A):
         remaining_t = len(t)-len(i1_mapped)
         for i in range(0,remaining_t):
             i1_mapped.append(i1_mapped[len(i1_mapped)-1])
-    s = []      
+    s = []; c = []      
     for i in range(len(t)):
         s.append(A*np.exp(-1j*np.pi*t[i]*f+1j*theta[i1_mapped[i]]))
+        c.append(A*np.exp(-1j*np.pi*t[i]*f))
         #print(theta[i1_mapped[i]])
             
     
         
     
-    return [i1_mapped,s]
+    return [i1_mapped,s,c]
     
 
 def test():
     from Constalation_in_python import Constallation_phase
     N = 60
-    A = 4
+    A = 1
     f = 2
 
     levels = 2
@@ -69,7 +92,7 @@ def test():
     
     ints = Int_generator(bits,levels)
     
-    i1_mapped,s = MPSK_Generator(ints, t,levels,f,A)
+    i1_mapped,s,c = MPSK_Generator(ints, t,levels,f,A)
     
     c = A*np.exp(-1j*np.pi*t*f)
     

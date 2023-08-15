@@ -1,4 +1,4 @@
-def Get_orbital(line_1,line_2,lat,long,height,start_elv, acc = 100,stop_time_min = 60):
+def Get_orbital(line_1,line_2,lat,long,height,start_elv, acc = 100,stop_time_min = 1440):
     """
     Predicts the next orbital pass for a sattellite given a location and height 
 
@@ -42,7 +42,7 @@ def Get_orbital(line_1,line_2,lat,long,height,start_elv, acc = 100,stop_time_min
     d,Az1, elv1,q = sat.get_pos_TOPO(acc,lat,long,height)
     height_of_sat = []
     sec = 0
-    step = 0.1
+    step = 1
     stop_time_min = stop_time_min*60
     
 
@@ -64,6 +64,7 @@ def Get_orbital(line_1,line_2,lat,long,height,start_elv, acc = 100,stop_time_min
     elv = [];Az = []
     d = []
     sec = 0
+    step = step/10
     while np.rad2deg(current_elv)>start_elv  :
         time_now = date_at_start+datetime.timedelta(0,sec)
         sat = TLE_calc(line_1, line_2,True,time_now.year,time_now.month,time_now.day,time_now.hour,time_now.minute,
@@ -72,6 +73,7 @@ def Get_orbital(line_1,line_2,lat,long,height,start_elv, acc = 100,stop_time_min
         elv.append(current_elv);d.append(d_current);time_window.append(date_at_start+datetime.timedelta(seconds=sec));Az.append(Az1)
         height_of_sat.append(sat.get_height(acc))
         sec = sec+step
+        print(f"Percent till Full day {round((sec/stop_time_min),4)*100}%")
         if sec>stop_time_min:
             break
         
@@ -86,13 +88,13 @@ def Oribtal_time_check():
     import numpy as np
     import matplotlib.pyplot as plt
     import matplotlib.dates as mdates
-    line_1 = "1 37846U 11060A   23216.79436601 -.00000089  00000+0  00000+0 0  9992"
-    line_2 = '2 37846  57.1053  10.1244 0002842  67.3316 292.6967  1.70475823 73395'
+    line_1 = "1 40129U 14050B   23221.19171039 -.00000113  00000+0  00000+0 0  9991"
+    line_2 = '2 40129  49.9782 314.6846 1607633 140.2057 232.7849  1.85519692 61103'
     lat = 51.00653
     long = 0.85587541
     acc = 100
     height = 0
-    [time_till_window,date_at_start],[time_till_end_of_window,date_at_end], elv,d,time, Az= Get_orbital(line_1,line_2,
+    [time_till_window,date_at_start],[time_till_end_of_window,date_at_end], elv,d,time, Az,height_of_sat = Get_orbital(line_1,line_2,
                                                                                                 lat,long,acc,height,0)
     print(f"""
           Time till: {time_till_window} Elv start: {np.rad2deg(elv[0])}
@@ -119,7 +121,7 @@ def Oribtal_time_check():
     
     import csv
     
-    with open("Test_data/slant_data.csv",mode = 'w',newline = '') as f:
+    with open("Data/slant_data.csv",mode = 'w',newline = '') as f:
         csv_writer = csv.writer(f)
         
         csv_writer.writerow(["Time","d","elv"])
@@ -168,7 +170,7 @@ def Get_range_rate(d):
 def Get_freq_change(range_rate):
     freq_change = []
     for i in range(len(range_rate)):
-        freq_change.append((3E8)/(3E8+(range_rate[i]*1000)))
+        freq_change.append((3E8)/(3E8+(range_rate[i])*1E3))
         
     return freq_change
         
@@ -180,7 +182,7 @@ def Doppler_shift_test():
     
     time = [];d_old = [];elv = []
     
-    with open("Test_data/slant_data.csv","r") as f:
+    with open("Data/slant_data.csv","r") as f:
         csvreader= csv.reader(f,delimiter=',')
         
         for row in csvreader:
@@ -192,17 +194,21 @@ def Doppler_shift_test():
         time[i] = datetime.datetime.strptime(time[i],"%Y-%m-%d %H:%M:%S.%f%z")
 
     range_rate = Get_range_rate(d)
-
-
-    plt.plot((3E8)/(3E8+(range_rate*1000)))
     
+    freq_change = Get_freq_change(range_rate)
+    
+    for i in range(len(freq_change)):
+        freq_change[i] = (freq_change[i]*100E6)-100E6
+    
+    plt.plot(freq_change)
+    # plt.ylim((99.999E6,100.0001E6))
 def All_togther_now_test():
     import matplotlib.pyplot as plt
     import matplotlib.dates as mdates
     import numpy as np
     # Data for the ISS and lat/long and height for Ham Street kent 
-    line_1 = "1 25544U 98067A   23203.12476910  .00011930  00000-0  21722-3 0  9991"
-    line_2 = '2 25544  51.6411 155.4137 0000523  72.9869 282.0755 15.49927938407206'
+    line_1 = "1 40129U 14050B   23221.19171039 -.00000113  00000+0  00000+0 0  9991"
+    line_2 = '2 40129  49.9782 314.6846 1607633 140.2057 232.7849  1.85519692 61103'
     lat = 51.00653
     long = 0.85587541
     height = 0
@@ -218,7 +224,8 @@ def All_togther_now_test():
 
     f_change = Get_freq_change(range_rate)
 
-    
+    for i in range(len(f_change)):
+        f_change[i] = (f_change[i]*100E6)-100E6
     
     
     fig1, (sub1, sub2,sub3) = plt.subplots(3,1, figsize=(10, 10))
@@ -238,7 +245,7 @@ def All_togther_now_test():
     
     
     sub1.set_ylabel("Degrees")
-    sub2.set_ylabel("Change in freq")
+    sub2.set_ylabel("Change in freq at 100M Hz")
     sub3.set_ylabel("Degrees")
     sub3.set_xlabel("Time")
     sub1.set_title("Elevation angle")
@@ -250,4 +257,4 @@ def All_togther_now_test():
     plt.show()
     
 if __name__ == "__main__":
-    Oribtal_time_check()
+    All_togther_now_test()

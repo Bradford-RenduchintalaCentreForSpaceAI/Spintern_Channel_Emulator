@@ -61,7 +61,7 @@ def Get_orbital(line_1,line_2,lat,long,height,start_elv, acc = 100,stop_time_min
 
     current_elv = elv1
     time_window = []
-    elv = [];Az = []
+    elv = [];Az = [];lat_sat = [];long_sat= []
     d = []
     sec = 0
     step = step/10
@@ -70,10 +70,13 @@ def Get_orbital(line_1,line_2,lat,long,height,start_elv, acc = 100,stop_time_min
         sat = TLE_calc(line_1, line_2,True,time_now.year,time_now.month,time_now.day,time_now.hour,time_now.minute,
                       time_now.second,time_now.microsecond)
         d_current,Az1, current_elv,q = sat.get_pos_TOPO(acc,lat,long,height)
+        lat_long_sat = sat.get_pos_ECEF(100)
+        lat_sat1 = lat_long_sat["lat"]
+        long_sat1 = lat_long_sat["long"]
         elv.append(current_elv);d.append(d_current);time_window.append(date_at_start+datetime.timedelta(seconds=sec));Az.append(Az1)
-        height_of_sat.append(sat.get_height(acc))
+        height_of_sat.append(sat.get_height(acc));long_sat.append(long_sat1);lat_sat.append(lat_sat1)
         sec = sec+step
-        print(f"Percent till Full day {round((sec/stop_time_min),4)*100}%")
+        print(f"Hours: {sec/60**2}")
         if sec>stop_time_min:
             break
         
@@ -82,7 +85,7 @@ def Get_orbital(line_1,line_2,lat,long,height,start_elv, acc = 100,stop_time_min
     
     time_till_end_of_window = datetime.timedelta(seconds=sec)
     date_at_end = date_at_start+datetime.timedelta(seconds=sec)
-    return [time_till_window,date_at_start],[time_till_end_of_window,date_at_end], elv,d,time_window, Az,height_of_sat
+    return [time_till_window,date_at_start],[time_till_end_of_window,date_at_end], elv,d,time_window, Az,height_of_sat,lat_sat,long_sat
 
 def Oribtal_time_check():
     import numpy as np

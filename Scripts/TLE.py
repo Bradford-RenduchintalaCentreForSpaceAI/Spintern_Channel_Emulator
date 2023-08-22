@@ -397,8 +397,8 @@ def test():
         line_1 = line_1_2[0:71]
         line_2 = line_1_2[71:]
     except:    
-        line_1 = "1 37846U 11060A   23216.79436601 -.00000089  00000+0  00000+0 0  9992"
-        line_2 = '2 37846  57.1053  10.1244 0002842  67.3316 292.6967  1.70475823 73395'
+        line_1 = "1 25544U 98067A   23230.52969146  .00014261  00000-0  26237-3 0  9999"
+        line_2 = '2 25544  51.6405  19.6846 0003622 320.2668  39.8055 15.49449843411464'
     sat = TLE_calc(line_1,line_2,False) # Initiate a sattellite using the TLE data provided 
     
     acc = 100000 # Set accuracy of computation to 100 see class TLE
